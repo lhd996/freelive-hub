@@ -238,10 +238,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public TokenUserInfoDto login(String email, String password, String ip) {
 		// 拿到账号信息
 		UserInfo userInfo = userInfoMapper.selectByEmail(email);
-		// 明文转密文
-		String encodeByMd5 = StringTools.encodeByMd5(password);
 		// 如果账号不存在或密码错误
-		if (userInfo == null || !userInfo.getPassword().equals(encodeByMd5)){
+		if (userInfo == null || !userInfo.getPassword().equals(password)){
 			throw new BusinessException("账号不存在或密码有误");
 		}
 		// 如果状态为异常

@@ -67,13 +67,13 @@ public class RedisComponent {
 
     public void saveTokenInfo(TokenUserInfoDto tokenUserInfoDto){
         // UUID作为键
-        String key = UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString();
         // 设置过期时间
         tokenUserInfoDto.setExpireAt(System.currentTimeMillis() + Constants.REDIS_KEY_EXPIRES_SEVEN_DAY);
         // 设置token
-        tokenUserInfoDto.setToken(key);
-        // 将token存入redis
-        redisUtils.setex(Constants.REDIS_KEY_TOKEN_WEB + key,tokenUserInfoDto,Constants.REDIS_KEY_EXPIRES_SEVEN_DAY);
+        tokenUserInfoDto.setToken(token);
+        // 将token信息存入redis
+        redisUtils.setex(Constants.REDIS_KEY_TOKEN_WEB + token,tokenUserInfoDto,Constants.REDIS_KEY_EXPIRES_SEVEN_DAY);
     }
 
     /**
@@ -98,5 +98,33 @@ public class RedisComponent {
 
     public TokenUserInfoDto getTokenInfo(String token){
         return (TokenUserInfoDto) redisUtils.get(Constants.REDIS_KEY_TOKEN_WEB + token);
+    }
+
+    /**
+     * 将admin端的token信息存入redis，这次只需要传一个账户即可
+     * @param account 账户
+     * @return token UUID
+     * @author liuhd
+     * 2024/12/5 23:34
+     */
+    
+    public String saveTokenInfoForAdmin(String account){
+        // UUID作为键
+        String token = UUID.randomUUID().toString();
+        // 将token信息存入redis
+        redisUtils.setex(Constants.REDIS_KEY_TOKEN_ADMIN + token,account,Constants.REDIS_KEY_EXPIRES_ONE_DAY);
+        return token;
+    }
+
+    /**
+     * 从redis中删除token
+     * @param token
+     * @return
+     * @author liuhd
+     * 2024/12/5 23:51
+     */
+
+    public void cleanTokenForAdmin(String token){
+        redisUtils.delete(Constants.REDIS_KEY_TOKEN_ADMIN + token);
     }
 }

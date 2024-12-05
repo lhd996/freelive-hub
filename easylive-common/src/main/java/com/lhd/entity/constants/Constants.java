@@ -24,9 +24,16 @@ public class Constants {
     // 一天
     public static final Integer TIME_SECONDS_DAY = REDIS_KEY_EXPIRES_ONE_DAY / 1000;
     // redis token的前缀
+      // for web服务
     public static final String REDIS_KEY_TOKEN_WEB = REDIS_KEY_PREFIX + "token:web:";
-    // token
+      // for admin服务
+    public static final String REDIS_KEY_TOKEN_ADMIN = REDIS_KEY_PREFIX + "token:admin";
+    // token for web server
     public static final String TOKEN_WEB = "token";
+    // token for admin server
+    public static final String TOKEN_ADMIN = "adminToken";
+
+
     // 密码正则
     // 至少有8个字符长。
     //至少包含一个小写字母。
