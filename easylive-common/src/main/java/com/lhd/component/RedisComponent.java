@@ -127,4 +127,16 @@ public class RedisComponent {
     public void cleanTokenForAdmin(String token){
         redisUtils.delete(Constants.REDIS_KEY_TOKEN_ADMIN + token);
     }
+
+    /**
+     * 从redis中取出token信息 for admin server
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/6 1:35
+     */
+
+    public String getTokenInfoForAdmin(String token){
+        return (String) redisUtils.get(Constants.REDIS_KEY_TOKEN_ADMIN + token);
+    }
 }

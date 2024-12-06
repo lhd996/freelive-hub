@@ -122,10 +122,10 @@ public class AccountController extends ABaseController {
             String ip = getIpAddr();
             // 登录逻辑 并将用户信息存入redis(token值 : tokenUserInfoDto)
             TokenUserInfoDto tokenUserInfoDto = userInfoService.login(email, password, ip);
-            // 将tokenUserInfoDto存入cookie（cookie就在请求头中）,本来应该是前端的工作，我们做了再说
+            // 将token存入cookie,有些请求前端做不到将token放在请求头中,我们只能放在cookie中,然后从cookie中拿
             saveTokenToCookie(response, tokenUserInfoDto.getToken());
             // TODO 设置粉丝数 关注数
-
+            // 将token送给前端,前端要把token放在请求头中
             return getSuccessResponseVO(tokenUserInfoDto);
         } finally {
             // 删除redis中图片验证码

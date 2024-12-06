@@ -97,8 +97,8 @@ public class ABaseController {
     protected void saveTokenToCookie(HttpServletResponse response, String token) {
         // cookie是键值对
         Cookie cookie = new Cookie(Constants.TOKEN_ADMIN, token);
-        // 过期时间
-        cookie.setMaxAge(Constants.TIME_SECONDS_DAY);
+        // 过期时间为一个会话
+        cookie.setMaxAge(-1);
         cookie.setPath("/");
         // 放入response中
         response.addCookie(cookie);

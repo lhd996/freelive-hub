@@ -1,8 +1,9 @@
-package com.lhd.admin.controller;
-
+package com.lhd.controller;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.vo.ResponseVO;
 import com.lhd.exception.BusinessException;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -21,8 +22,10 @@ import javax.validation.ConstraintViolationException;
  **/
 
 @RestControllerAdvice
-public class AGlobalExceptionHandlerController extends ABaseController {
+public class AGlobalExceptionHandlerController {
+    private static final String STATUC_SUCCESS = "success";
 
+    private static final String STATUC_ERROR = "error";
     private static final Logger logger = LoggerFactory.getLogger(AGlobalExceptionHandlerController.class);
 
     @ExceptionHandler(value = Exception.class)

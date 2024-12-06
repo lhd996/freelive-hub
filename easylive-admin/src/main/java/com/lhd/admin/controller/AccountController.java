@@ -62,35 +62,6 @@ public class AccountController extends ABaseController {
         map.put("checkCode", checkCodeBase64);
         return getSuccessResponseVO(map);
     }
-
-    /**
-     * 用户注册
-     *
-     * @param
-     * @return
-     * @author liuhd
-     * 2024/12/4 23:32
-     */
-    @RequestMapping("/register")
-    public ResponseVO register(@NotEmpty @Email String email,
-                               @NotEmpty @Size(max = 20) String nickName,
-                               @NotEmpty String registerPassword,
-                               @NotEmpty String checkCodeKey,
-                               @NotEmpty String checkCode) {
-        try {
-            // 校验用户验证码
-            if (!checkCode.equalsIgnoreCase(redisComponent.getCheckCode(checkCodeKey))) {
-                throw new BusinessException("图片验证码错误");
-            }
-            //  注册
-            userInfoService.register(email, nickName, registerPassword);
-            return getSuccessResponseVO(null);
-        } finally {
-            // 删除图片验证码
-            redisComponent.cleanCheckCode(checkCodeKey);
-        }
-    }
-
     /**
      * 用户登录
      *
@@ -118,6 +89,7 @@ public class AccountController extends ABaseController {
             String token = redisComponent.saveTokenInfoForAdmin(account);
             // 存入cookie 以后会把token自动会携带过来
             saveTokenToCookie(response,token);
+            // 将信息返回前端 实际上还应该将token返回给前端 但是这个项目里前端从cookie中取了token
             return getSuccessResponseVO(account);
         } finally {
             // 删除redis中图片验证码
