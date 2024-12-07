@@ -29,28 +29,31 @@
 	</sql>
 
 	<sql id="base_condition_filed">
-			<if test="query.categoryId != null">
-				 and  c.category_id = #{query.categoryId}
-			</if>
-			<if test="query.categoryCode != null and query.categoryCode!=''">
-				 and  c.category_code = #{query.categoryCode}
-			</if>
-			<if test="query.categoryName != null and query.categoryName!=''">
-				 and  c.category_name = #{query.categoryName}
-			</if>
-			<if test="query.pCategoryId != null">
-				 and  c.p_category_id = #{query.pCategoryId}
-			</if>
-			<if test="query.icon != null and query.icon!=''">
-				 and  c.icon = #{query.icon}
-			</if>
-			<if test="query.background != null and query.background!=''">
-				 and  c.background = #{query.background}
-			</if>
-			<if test="query.sort != null">
-				 and  c.sort = #{query.sort}
-			</if>
-	</sql>
+        <if test="query.categoryId != null">
+            and c.category_id = #{query.categoryId}
+        </if>
+        <if test="query.categoryCode != null and query.categoryCode!=''">
+            and c.category_code = #{query.categoryCode}
+        </if>
+        <if test="query.categoryName != null and query.categoryName!=''">
+            and c.category_name = #{query.categoryName}
+        </if>
+        <if test="query.pCategoryId != null">
+            and c.p_category_id = #{query.pCategoryId}
+        </if>
+        <if test="query.icon != null and query.icon!=''">
+            and c.icon = #{query.icon}
+        </if>
+        <if test="query.background != null and query.background!=''">
+            and c.background = #{query.background}
+        </if>
+        <if test="query.sort != null">
+            and c.sort = #{query.sort}
+        </if>
+        <if test="query.categoryIdOrPCategoryId != null">
+            and c.category_id = #{query.categoryIdOrPCategoryId} or c.p_category_id = #{query.categoryIdOrPCategoryId}
+        </if>
+    </sql>
 	<!-- 通用条件列-->
 	<sql id="base_condition">
 	 <where>
@@ -355,6 +358,12 @@
  		 where category_code=#{categoryCode}
 	</update>
 
+	<update id="updateSortBatch">
+		<foreach collection="params" separator=";" item="param">
+			update category_info set sort = #{param.sort} where category_id = #{param.categoryId}
+		</foreach>
+	</update>
+
 	<!-- 根据CategoryCode删除-->
 	<delete id="deleteByCategoryCode">
 		delete from category_info where category_code=#{categoryCode}
@@ -363,6 +372,9 @@
 	<!-- 根据PrimaryKey获取对象-->
 	<select id="selectByCategoryCode" resultMap="base_result_map" >
 		select <include refid="base_column_list" /> from category_info c where category_code=#{categoryCode}
+	</select>
+	<select id="selectMaxSort" resultType="java.lang.Integer">
+		select ifnull(max(sort),0) from easylive.category_info where p_category_id = #{pCategoryId};
 	</select>
 
 </mapper>

@@ -1,6 +1,9 @@
 package com.lhd.entity.query;
 
 
+import com.lhd.entity.po.CategoryInfo;
+
+import java.util.List;
 
 /**
  * 分类信息参数
@@ -31,6 +34,26 @@ public class CategoryInfoQuery extends BaseParam {
 	 * 父级分类ID
 	 */
 	private Integer pCategoryId;
+
+	private Integer CategoryIdOrPCategoryId;
+
+	public Integer getCategoryIdOrPCategoryId() {
+		return CategoryIdOrPCategoryId;
+	}
+
+	public void setCategoryIdOrPCategoryId(Integer categoryIdOrPCategoryId) {
+		CategoryIdOrPCategoryId = categoryIdOrPCategoryId;
+	}
+
+	private Boolean convertToTree;
+
+	public Boolean getConvertToTree() {
+		return convertToTree;
+	}
+
+	public void setConvertToTree(Boolean convertToTree) {
+		this.convertToTree = convertToTree;
+	}
 
 	/**
 	 * 图标

@@ -2,10 +2,12 @@ package com.lhd.component;
 
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.po.CategoryInfo;
 import com.lhd.redis.RedisUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -138,5 +140,17 @@ public class RedisComponent {
 
     public String getTokenInfoForAdmin(String token){
         return (String) redisUtils.get(Constants.REDIS_KEY_TOKEN_ADMIN + token);
+    }
+
+    /**
+     * 将分区列表缓存到redis中
+     * @param categoryInfoList 分区列表
+     * @return
+     * @author liuhd
+     * 2024/12/7 21:29
+     */
+
+    public void saveCategoryList(List<CategoryInfo> categoryInfoList) {
+        redisUtils.set(Constants.REDIS_KEY_CATEGORY_LIST , categoryInfoList);
     }
 }

@@ -6,6 +6,9 @@ import com.lhd.entity.query.CategoryInfoQuery;
 import com.lhd.entity.po.CategoryInfo;
 import com.lhd.entity.vo.PaginationResultVO;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 
 /**
  * 分类信息 业务接口
@@ -86,5 +89,34 @@ public interface CategoryInfoService {
 	 * 根据CategoryCode删除
 	 */
 	Integer deleteCategoryInfoByCategoryCode(String categoryCode);
-
+	
+	/**
+	 * 新增Category
+	 * @param 
+	 * @return 
+	 * @author liuhd
+	 * 2024/12/7 15:16
+	 */
+	
+	void saveCategory(CategoryInfo bean);
+	
+	/**
+	 * 删除category by id
+	 * @param 
+	 * @return 
+	 * @author liuhd
+	 * 2024/12/7 16:09
+	 */
+	
+	void delCategoryById(Integer categoryId);
+	
+	/**
+	 * 改变Sort号 实现排序
+	 * @param 
+	 * @return 
+	 * @author liuhd
+	 * 2024/12/7 21:02
+	 */
+	
+	void changeSort(String categoryIds);
 }
