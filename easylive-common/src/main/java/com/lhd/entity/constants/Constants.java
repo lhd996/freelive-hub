@@ -10,6 +10,7 @@ public class Constants {
     public static final Integer ZERO = 0;
     public static final Integer ONE = 1;
     public static final Integer LENGTH_10 = 10;
+    public static final Integer LENGTH_30 = 30;
     // 区分不同项目
     public static final String REDIS_KEY_PREFIX = "easylive:";
     // redis验证码前缀
@@ -34,6 +35,13 @@ public class Constants {
     public static final String TOKEN_ADMIN = "adminToken";
 
     public static final String REDIS_KEY_CATEGORY_LIST = REDIS_KEY_PREFIX + "category:list:";
+
+    public static final String FILE_FOLDER = "file/";
+    public static final String FILE_COVER = "cover/";
+    public static final String FILE_VIDEO = "video/";
+    public static final String FILE_FOLDER_TEMP = "tmp/";
+
+    public static final String IMAGE_THUMBNAIL_SUFFIX = "_thumbnail.jpg";
     // 密码正则
     // 至少有8个字符长。
     //至少包含一个小写字母。
