@@ -516,8 +516,12 @@
 	<delete id="deleteByUploadIdAndUserId">
 		delete from video_info_file_post where upload_id=#{uploadId} and user_id=#{userId}
 	</delete>
+    <delete id="deleteBatchByFileIds">
+		delete from easylive.video_info_file_post where file_id in (<foreach collection="FileIds" separator="," item="item"/>)
+		and user_id = #{userId}
+	</delete>
 
-	<!-- 根据PrimaryKey获取对象-->
+    <!-- 根据PrimaryKey获取对象-->
 	<select id="selectByUploadIdAndUserId" resultMap="base_result_map" >
 		select <include refid="base_column_list" /> from video_info_file_post v where upload_id=#{uploadId} and user_id=#{userId}
 	</select>

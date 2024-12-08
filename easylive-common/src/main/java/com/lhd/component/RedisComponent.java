@@ -7,6 +7,7 @@ import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.dto.UploadingFileDto;
 import com.lhd.entity.enums.DateTimePatternEnum;
 import com.lhd.entity.po.CategoryInfo;
+import com.lhd.entity.po.VideoInfoFilePost;
 import com.lhd.redis.RedisUtils;
 import com.lhd.utils.DateUtil;
 import com.lhd.utils.StringTools;
@@ -272,5 +273,31 @@ public class RedisComponent {
 
     public void delVideoInfo(String userId, String uploadId) {
         redisUtils.delete(Constants.REDIS_KEY_UPLOADING_FILE + userId + uploadId);
+    }
+    /**
+     * 将视频的要删除的分p加入消息队列
+     * @param videoId 视频id delFilePathList 要删除的分p路径List
+     * @return
+     * @author liuhd
+     * 2024/12/8 20:26
+     */
+
+    public void addFile2DelQueue(String videoId, List<String> delFilePathList) {
+        redisUtils.lpushAll(Constants.REDIS_KEY_FILE_DEL + videoId,delFilePathList,Constants.REDIS_KEY_EXPIRES_ONE_DAY);
+    }
+    /**
+     * 将视频分p加入转码的消息队列（针对所有视频）
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/8 20:55
+     */
+
+    public void addFile2TransferQueue(List<VideoInfoFilePost> addFileList) {
+        redisUtils.lpushAll(Constants.REDIS_KEY_QUEUE_TRANSFER,addFileList,0);
+    }
+
+    public VideoInfoFilePost getFileFromTransferQueue(){
+        return (VideoInfoFilePost) redisUtils.rpop(Constants.REDIS_KEY_QUEUE_TRANSFER);
     }
 }

@@ -49,6 +49,13 @@ public class Constants {
 
     //系统设置
     public static final String REDIS_KEY_SYS_SETTING = REDIS_KEY_PREFIX + "sysSetting:";
+
+    //删除文件的结合
+    public static final String REDIS_KEY_FILE_DEL = REDIS_KEY_PREFIX + "file:list:del:";
+
+    //转码的消息队列
+    public static final String REDIS_KEY_QUEUE_TRANSFER = REDIS_KEY_PREFIX + "queue:transfer:";
+
     // 密码正则
     // 至少有8个字符长。
     //至少包含一个小写字母。

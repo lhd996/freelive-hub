@@ -2,6 +2,7 @@ package com.lhd.service;
 
 import java.util.List;
 
+import com.lhd.entity.po.VideoInfoFilePost;
 import com.lhd.entity.query.VideoInfoPostQuery;
 import com.lhd.entity.po.VideoInfoPost;
 import com.lhd.entity.vo.PaginationResultVO;
@@ -69,4 +70,5 @@ public interface VideoInfoPostService {
 	 */
 	Integer deleteVideoInfoPostByVideoId(String videoId);
 
+    void saveVideoInfo(VideoInfoPost videoInfoPost, List<VideoInfoFilePost> uploadFileList);
 }

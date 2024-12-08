@@ -2,6 +2,8 @@ package com.lhd.mappers;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 视频文件信息 数据库操作接口
  */
@@ -42,5 +44,13 @@ public interface VideoInfoFilePostMapper<T,P> extends BaseMapper<T,P> {
 	 */
 	 T selectByUploadIdAndUserId(@Param("uploadId") String uploadId,@Param("userId") String userId);
 
-
+	 /**
+	  * 根据FileIds批量删除
+	  * @param 
+	  * @return 
+	  * @author liuhd
+	  * 2024/12/8 20:07
+	  */
+	 
+    void deleteBatchByFileIds(@Param("fileIds") List<String> fileIds,@Param("userId") String userId);
 }
