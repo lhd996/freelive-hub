@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
     @Value("${project.folder}")
     private String projectFolder;
-    @Value("${admin.account}")
+    @Value("${admin.account:admin}")
     private String adminAccount;
-    @Value("${admin.password}")
+    @Value("${admin.password:admin123}")
     private String adminPassword;
 //    @Value("${showFFmpeg:true}")
 //    private Boolean showFFmpegLog;

@@ -262,6 +262,30 @@ public class CategoryInfoServiceImpl implements CategoryInfoService {
         //重新存入redis
         save2Redis();
     }
+    /**
+     * 从redis中获取缓存
+     * @param 
+     * @return 
+     * @author liuhd
+     * 2024/12/8 10:22
+     */
+    
+    @Override
+    public List<CategoryInfo> getAllCategoryList() {
+        List<CategoryInfo> categoryList = redisComponent.getCategoryList();
+        if (categoryList == null){
+            save2Redis();
+        }
+        return redisComponent.getCategoryList();
+    }
+
+    /**
+     * 刷新缓存
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/8 10:26
+     */
 
     private void save2Redis(){
         CategoryInfoQuery query = new CategoryInfoQuery();
@@ -270,4 +294,5 @@ public class CategoryInfoServiceImpl implements CategoryInfoService {
         List<CategoryInfo> categoryInfoList = findListByParam(query);
         redisComponent.saveCategoryList(categoryInfoList);
     }
+
 }

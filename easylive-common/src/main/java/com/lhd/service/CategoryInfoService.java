@@ -119,4 +119,14 @@ public interface CategoryInfoService {
 	 */
 	
 	void changeSort(String categoryIds);
+	
+	/**
+	 * 
+	 * @param 
+	 * @return 
+	 * @author liuhd
+	 * 2024/12/8 10:27
+	 */
+	
+    List<CategoryInfo> getAllCategoryList();
 }
