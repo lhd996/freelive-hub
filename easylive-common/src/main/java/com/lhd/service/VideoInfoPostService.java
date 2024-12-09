@@ -71,4 +71,14 @@ public interface VideoInfoPostService {
 	Integer deleteVideoInfoPostByVideoId(String videoId);
 
     void saveVideoInfo(VideoInfoPost videoInfoPost, List<VideoInfoFilePost> uploadFileList);
+
+	/**
+	 * 文件转码（文件从temp移动到video）
+	 * @param
+	 * @return
+	 * @author liuhd
+	 * 2024/12/9 9:46
+	 */
+
+	void transferVideoFile(VideoInfoFilePost videoInfoFilePost);
 }

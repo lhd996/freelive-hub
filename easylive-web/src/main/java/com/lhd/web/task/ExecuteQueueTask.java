@@ -31,15 +31,18 @@ public class ExecuteQueueTask {
     public void consumeTransferFileQueue(){
         executorService.execute(()->{
             while (true){
+                VideoInfoFilePost videoInfoFilePost = null;
                 try {
                     // 从消息队列取出
-                    VideoInfoFilePost videoInfoFilePost = redisComponent.getFileFromTransferQueue();
+                    videoInfoFilePost = redisComponent.getFileFromTransferQueue();
                     // 消息队列没有数据了
                     if (videoInfoFilePost == null){
                         // 休息一下
                         Thread.sleep(2000);
                         continue;
                     }
+                    // 有数据 消费
+                    videoInfoPostService.transferVideoFile(videoInfoFilePost);
                 }catch (Exception e){
                     log.error("消息转码文件队列信息失败",e);
                 }

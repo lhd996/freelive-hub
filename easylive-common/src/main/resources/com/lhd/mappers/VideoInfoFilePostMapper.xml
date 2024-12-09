@@ -511,6 +511,9 @@
  		 </set>
  		 where upload_id=#{uploadId} and user_id=#{userId}
 	</update>
+	<select id="sumDuration" resultType="java.lang.Integer">
+		select ifnull(sum(duration),0) from easylive.video_info_file_post where video_id = #{videoId}
+	</select>
 
 	<!-- 根据UploadIdAndUserId删除-->
 	<delete id="deleteByUploadIdAndUserId">
