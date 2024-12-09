@@ -81,4 +81,14 @@ public interface VideoInfoPostService {
 	 */
 
 	void transferVideoFile(VideoInfoFilePost videoInfoFilePost);
+	
+	/**
+	 * 审核视频
+	 * @param status 是否通过 reason 不通过原因
+	 * @return 
+	 * @author liuhd
+	 * 2024/12/9 19:56
+	 */
+	
+    void auditVideo(String videoId, Integer status, String reason);
 }

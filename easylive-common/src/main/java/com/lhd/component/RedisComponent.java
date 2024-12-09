@@ -275,7 +275,7 @@ public class RedisComponent {
         redisUtils.delete(Constants.REDIS_KEY_UPLOADING_FILE + userId + uploadId);
     }
     /**
-     * 将视频的要删除的分p加入消息队列
+     * 将视频的要删除的分p加入删除队列
      * @param videoId 视频id delFilePathList 要删除的分p路径List
      * @return
      * @author liuhd
@@ -286,21 +286,44 @@ public class RedisComponent {
         redisUtils.lpushAll(Constants.REDIS_KEY_FILE_DEL + videoId,delFilePathList,Constants.REDIS_KEY_EXPIRES_ONE_DAY);
     }
     /**
-     * 将视频分p加入转码的消息队列（针对所有视频）
+     * 将视频分p加入转码的删除队列（针对所有视频）
      * @param
      * @return
      * @author liuhd
      * 2024/12/8 20:55
      */
 
+    public List<String> getFilesFromDelQueue(String videoId){
+        return redisUtils.getQueueList(Constants.REDIS_KEY_FILE_DEL + videoId);
+    }
+
+    /**
+     * 清除删除队列
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/9 21:33
+     */
+
+    public void cleanDelQueue(String videoId) {
+        redisUtils.delete(Constants.REDIS_KEY_FILE_DEL + videoId);
+    }
+
     public void addFile2TransferQueue(List<VideoInfoFilePost> addFileList) {
         redisUtils.lpushAll(Constants.REDIS_KEY_QUEUE_TRANSFER,addFileList,0);
     }
-    public void addFile2TransferQueue4Single(VideoInfoFilePost videoInfoFilePost) {
-        redisUtils.lpush(Constants.REDIS_KEY_QUEUE_TRANSFER,videoInfoFilePost,0L);
-    }
+
+    /**
+     * 从转码队列中取出视频分p
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/9 21:22
+     */
 
     public VideoInfoFilePost getFileFromTransferQueue(){
         return (VideoInfoFilePost) redisUtils.rpop(Constants.REDIS_KEY_QUEUE_TRANSFER);
     }
+    
+
 }

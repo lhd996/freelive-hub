@@ -1,6 +1,7 @@
 package com.lhd.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,11 +17,15 @@ import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.UploadingFileDto;
 import com.lhd.entity.enums.*;
+import com.lhd.entity.po.VideoInfo;
+import com.lhd.entity.po.VideoInfoFile;
 import com.lhd.entity.po.VideoInfoFilePost;
-import com.lhd.entity.query.VideoInfoFilePostQuery;
-import com.lhd.entity.query.VideoInfoFileQuery;
+import com.lhd.entity.query.*;
 import com.lhd.exception.BusinessException;
+import com.lhd.mappers.VideoInfoFileMapper;
 import com.lhd.mappers.VideoInfoFilePostMapper;
+import com.lhd.mappers.VideoInfoMapper;
+import com.lhd.utils.CopyTools;
 import com.lhd.utils.FFmpegUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -28,10 +33,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.validator.internal.properties.Field;
 import org.springframework.stereotype.Service;
 
-import com.lhd.entity.query.VideoInfoPostQuery;
 import com.lhd.entity.po.VideoInfoPost;
 import com.lhd.entity.vo.PaginationResultVO;
-import com.lhd.entity.query.SimplePage;
 import com.lhd.mappers.VideoInfoPostMapper;
 import com.lhd.service.VideoInfoPostService;
 import com.lhd.utils.StringTools;
@@ -49,6 +52,10 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
     private VideoInfoPostMapper<VideoInfoPost, VideoInfoPostQuery> videoInfoPostMapper;
     @Resource
     private VideoInfoFilePostMapper<VideoInfoFilePost, VideoInfoFilePostQuery> videoInfoFilePostMapper;
+    @Resource
+    private VideoInfoMapper<VideoInfo, VideoInfoQuery> videoInfoMapper;
+    @Resource
+    private VideoInfoFileMapper<VideoInfoFile, VideoInfoFileQuery> videoInfoFileMapper;
     @Resource
     private RedisComponent redisComponent;
     @Resource
@@ -255,10 +262,11 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
             List<String> delFileIdList = delFileList.stream().map(item -> item.getFileId()).collect(Collectors.toList());
             videoInfoFilePostMapper.deleteBatchByFileIds(delFileIdList, videoInfoPost.getUserId());
 
-
             List<String> delFilePathList = delFileList.stream().map(item -> item.getFilePath()).collect(Collectors.toList());
             // 将路径文件添加到队列中 异步删除
-            // 我有个问题 点击×的时候不是直接从文件系统中删除了吗？？？
+              //  如果不是第一次保存 说明是编辑视频 不能直接把文件删了 如果删除了 但是审核没过 你文件就没了
+              //  为啥可以删除数据库呢？ 因为正式表中还有文件路径啊 可以正常访问文件
+              //  那就只能加入删除队列保存 等审核通过后才删除 -> 532行
             redisComponent.addFile2DelQueue(videoId, delFilePathList);
         }
 
@@ -447,4 +455,99 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
         }
     }
 
+    /**
+     * 审核视频
+     * @param status 是否通过 reason 不通过原因
+     * @return
+     * @author liuhd
+     * 2024/12/9 19:56
+     */
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditVideo(String videoId, Integer status, String reason) {
+        VideoStatusEnum videoStatusEnum = VideoStatusEnum.getByStatus(status);
+        if (videoStatusEnum == null){
+            throw new BusinessException(ResponseCodeEnum.CODE_600);
+        }
+        // 乐观锁避免多人审核时数据库状态不一致
+        // 设置要更新的字段
+        VideoInfoPost videoInfoPost = new VideoInfoPost();
+        videoInfoPost.setStatus(status);
+
+        // 设置查询条件
+        VideoInfoPostQuery videoInfoPostQuery = new VideoInfoPostQuery();
+        videoInfoPostQuery.setStatus(VideoStatusEnum.STATUS2.getStatus());
+        videoInfoPostQuery.setVideoId(videoId);
+        // 更新视频状态
+        /*
+             只有status为待审核才能改！！！！
+              假设现在有两个人同时审核 现在一个人将视频变成审核通过，提交事务  然后另一个人又接着视频变成审核失败，就会导致一致性问题
+              为了避免这种情况 我们改的时候必须判断状态是否是待审核
+         */
+        // update video_info_post set status = #{status} where video_id = #{videoId} and status = 2
+        Integer auditCount = this.videoInfoPostMapper.updateByParam(videoInfoPost, videoInfoPostQuery);
+        if (auditCount == 0){
+            throw new BusinessException("审核失败,请稍后再试");
+        }
+
+        // 更新所有分p的状态为未更新
+        VideoInfoFilePost videoInfoFilePost = new VideoInfoFilePost();
+        videoInfoFilePost.setUpdateType(VideoFileUpdateTypeEnum.NO_UPDATE.getStatus());
+
+        VideoInfoFilePostQuery filePostQuery = new VideoInfoFilePostQuery();
+        filePostQuery.setVideoId(videoId);
+        this.videoInfoFilePostMapper.updateByParam(videoInfoFilePost,filePostQuery);
+
+        // 如果是审核不通过的话
+        if (videoStatusEnum == VideoStatusEnum.STATUS4){
+            return;
+        }
+
+        // 判断是否是第一次审核通过
+        VideoInfo dbVideoInfo = this.videoInfoMapper.selectByVideoId(videoId);
+        if (dbVideoInfo == null){
+            // TODO 给用户添加硬币
+
+        }
+        // 将发布视频表内容copy到正式视频表
+        VideoInfoPost dbvideoInfoPost = this.videoInfoPostMapper.selectByVideoId(videoId);
+        VideoInfo videoInfo = CopyTools.copy(dbvideoInfoPost, VideoInfo.class);
+        // 第一次审核是insert 多次审核是update
+        this.videoInfoMapper.insertOrUpdate(videoInfo);
+
+        // 将发布文件表copy到正式文件表 先删除 再添加
+          // 删除正式文件表中相关文件信息
+        VideoInfoFileQuery videoInfoFileQuery = new VideoInfoFileQuery();
+        videoInfoFileQuery.setVideoId(videoId);
+        this.videoInfoFileMapper.deleteByParam(videoInfoFileQuery);
+          // 取出发布文件表中相关文件信息
+        VideoInfoFilePostQuery filePostQuery1 = new VideoInfoFilePostQuery();
+        filePostQuery1.setVideoId(videoId);
+        List<VideoInfoFilePost> filePostList = this.videoInfoFilePostMapper.selectList(filePostQuery1);
+         // 塞入正式文件表
+        List<VideoInfoFile> videoInfoFileList = CopyTools.copyList(filePostList, VideoInfoFile.class);
+        this.videoInfoFileMapper.insertBatch(videoInfoFileList);
+
+        // 此时数据安全转移到正式表中 终于可以删除删除队列中涉及的文件了  268行<-
+          // 删除文件
+        List<String> filesPathList = redisComponent.getFilesFromDelQueue(videoId);
+        if (filesPathList != null && !filePostList.isEmpty()){
+            for (String path : filesPathList) {
+                File file = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER + path);
+                if (file.exists()){
+                    try {
+                        FileUtils.deleteDirectory(file);
+                    } catch (IOException e) {
+                        log.error("删除文件失败",e);
+                    }
+                }
+            }
+        }
+         // 删除redis删除队列
+        redisComponent.cleanDelQueue(videoId);
+
+        // TODO 保存信息到es
+
+    }
 }
