@@ -45,6 +45,8 @@ public class FileController extends ABaseController {
     private AppConfig appConfig;
     @Resource
     private RedisComponent redisComponent;
+    @Resource
+    private FFmpegUtils fFmpegUtils;
 
     /**
      * 从本地获取文件
@@ -151,10 +153,10 @@ public class FileController extends ABaseController {
      */
 
     @RequestMapping("/uploadImage")
-    public ResponseVO uploadImage(HttpServletRequest request,@NotNull MultipartFile file,@NotNull Boolean createThumbnail) throws IOException {
+    public ResponseVO uploadImage(@NotNull MultipartFile file,@NotNull Boolean createThumbnail) throws IOException {
         // 创建图片存放目录
         String day = DateUtil.format(new Date(),DateTimePatternEnum.YYYYMMDD.getPattern());
-        String folder = appConfig.getProjectFolder() + Constants.FILE_COVER + day;
+        String folder = appConfig.getProjectFolder() + Constants.FILE_FOLDER +  Constants.FILE_COVER + day;
         File folderFile = new File(folder);
         if (!folderFile.exists()){
             folderFile.mkdirs();
@@ -165,6 +167,10 @@ public class FileController extends ABaseController {
         // 文件上传
         String path = folder + "/" + fileName;
         file.transferTo(new File(path));
+        if (createThumbnail) {
+            //生成缩略图
+            fFmpegUtils.createImageThumbnail(path);
+        }
         return getSuccessResponseVO(Constants.FILE_COVER + day + "/" + fileName);
     }
 

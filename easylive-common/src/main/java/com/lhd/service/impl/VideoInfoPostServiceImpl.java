@@ -368,19 +368,18 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
                 VideoInfoPost videoInfoPostUpdate = new VideoInfoPost();
                 videoInfoPostUpdate.setStatus(VideoStatusEnum.STATUS1.getStatus());
                 videoInfoPostMapper.updateByVideoId(videoInfoPostUpdate,videoInfoFilePost.getVideoId());
-            }else {
-                // 查一下有没有转码中的
-                filePostQuery.setTransferResult(VideoFileTransferResultEnum.TRANSFER.getStatus());
-                Integer transferCount = videoInfoFilePostMapper.selectCount(filePostQuery);
-                // 如果没有
-                if (transferCount == 0){
-                    // 计算视频总时长 设置视频状态为审核中（更新视频表）
-                    Integer duration = videoInfoFilePostMapper.sumDuration(videoInfoFilePost.getVideoId());
-                    VideoInfoPost videoInfoPostUpdate = new VideoInfoPost();
-                    videoInfoPostUpdate.setStatus(VideoStatusEnum.STATUS2.getStatus());
-                    videoInfoPostUpdate.setDuration(duration);
-                    videoInfoPostMapper.updateByVideoId(videoInfoPostUpdate,videoInfoFilePost.getUserId());
-                }
+            }
+            // 查一下有没有转码中的
+            filePostQuery.setTransferResult(VideoFileTransferResultEnum.TRANSFER.getStatus());
+            Integer transferCount = videoInfoFilePostMapper.selectCount(filePostQuery);
+            // 如果没有
+            if (transferCount == 0){
+                // 计算视频总时长 设置视频状态待审核（更新视频表）
+                Integer duration = videoInfoFilePostMapper.sumDuration(videoInfoFilePost.getVideoId());
+                VideoInfoPost videoInfoPostUpdate = new VideoInfoPost();
+                videoInfoPostUpdate.setStatus(VideoStatusEnum.STATUS2.getStatus());
+                videoInfoPostUpdate.setDuration(duration);
+                videoInfoPostMapper.updateByVideoId(videoInfoPostUpdate,videoInfoFilePost.getVideoId());
             }
         }
     }

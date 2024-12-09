@@ -1,8 +1,12 @@
 package com.lhd.web.controller;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.enums.VideoStatusEnum;
 import com.lhd.entity.po.VideoInfoFilePost;
 import com.lhd.entity.po.VideoInfoPost;
+import com.lhd.entity.query.VideoInfoPostQuery;
+import com.lhd.entity.vo.PaginationResultVO;
 import com.lhd.entity.vo.ResponseVO;
+import com.lhd.entity.vo.VideoStatusCountInfoVO;
 import com.lhd.service.VideoInfoFilePostService;
 import com.lhd.service.VideoInfoPostService;
 import com.lhd.service.VideoInfoService;
@@ -65,4 +69,64 @@ public class UCenterPostController extends ABaseController{
         videoInfoPostService.saveVideoInfo(videoInfoPost,uploadFileList1);
         return getSuccessResponseVO(null);
     }
+    /**
+     * 加载已发布视频
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/9 16:45
+     */
+
+    @RequestMapping("/loadVideoList")
+    public ResponseVO loadVideoPost(HttpServletRequest request,Integer status,Integer pageNo,String videoNameFuzzy){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        VideoInfoPostQuery videoInfoPostQuery = new VideoInfoPostQuery();
+        videoInfoPostQuery.setUserId(tokenUserInfoDto.getUserId());
+        videoInfoPostQuery.setPageNo(pageNo);
+        videoInfoPostQuery.setOrderBy("v.create_time asc");
+        if (status!=null){
+            if (status == -1){ // 进行中
+                // 排除审核成功与失败
+                videoInfoPostQuery.setExcludeStatusArray(new Integer[]{VideoStatusEnum.STATUS3.getStatus(),VideoStatusEnum.STATUS4.getStatus()});
+            }else {
+                videoInfoPostQuery.setStatus(status);
+            }
+        }
+        videoInfoPostQuery.setVideoNameFuzzy(videoNameFuzzy);
+        videoInfoPostQuery.setQueryCountInfo(true);
+        PaginationResultVO<VideoInfoPost> resultVO  = videoInfoPostService.findListByPage(videoInfoPostQuery);
+        return getSuccessResponseVO(resultVO);
+    }
+    
+    /**
+     * 获取视频总数
+     * @param 
+     * @return 
+     * @author liuhd
+     * 2024/12/9 17:35
+     */
+    
+
+    @RequestMapping("/getVideoCountInfo")
+    public ResponseVO getVideoCountInfo(HttpServletRequest request){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        VideoInfoPostQuery videoInfoPostQuery = new VideoInfoPostQuery();
+        videoInfoPostQuery.setUserId(tokenUserInfoDto.getUserId());
+        videoInfoPostQuery.setStatus(VideoStatusEnum.STATUS3.getStatus());
+        Integer auditPassCount = videoInfoPostService.findCountByParam(videoInfoPostQuery);
+
+        videoInfoPostQuery.setStatus(VideoStatusEnum.STATUS4.getStatus());
+        Integer auditFailCount = videoInfoPostService.findCountByParam(videoInfoPostQuery);
+
+        videoInfoPostQuery.setStatus(null);
+        videoInfoPostQuery.setExcludeStatusArray(new Integer[]{VideoStatusEnum.STATUS3.getStatus(),VideoStatusEnum.STATUS4.getStatus()});
+        Integer inProgress = videoInfoPostService.findCountByParam(videoInfoPostQuery);
+
+        VideoStatusCountInfoVO countInfoVO = new VideoStatusCountInfoVO();
+        countInfoVO.setAuditFailCount(auditFailCount);
+        countInfoVO.setAuditPassCount(auditPassCount);
+        countInfoVO.setInProgress(inProgress);
+        return getSuccessResponseVO(countInfoVO);
+    }
+
 }
