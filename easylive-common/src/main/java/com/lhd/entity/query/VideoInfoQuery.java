@@ -147,6 +147,16 @@ public class VideoInfoQuery extends BaseParam {
 
 	private String lastPlayTimeEnd;
 
+	// 是否添加user信息相关查询参数
+	private Boolean queryUserInfo;
+
+	public Boolean getQueryUserInfo() {
+		return queryUserInfo;
+	}
+
+	public void setQueryUserInfo(Boolean queryUserInfo) {
+		this.queryUserInfo = queryUserInfo;
+	}
 
 	public void setVideoId(String videoId){
 		this.videoId = videoId;

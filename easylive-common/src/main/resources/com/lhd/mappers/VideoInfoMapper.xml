@@ -187,14 +187,23 @@
 
 	<!-- 查询集合-->
 	<select id="selectList" resultMap="base_result_map" >
-		 SELECT <include refid="base_column_list" /> FROM video_info v <include refid="query_condition" />
-		 <if test="query.orderBy!=null">
-			 order by ${query.orderBy}
-		 </if>
-		 <if test="query.simplePage!=null">
-			 limit #{query.simplePage.start},#{query.simplePage.end}
-		 </if>
-	</select>
+        SELECT
+        <include refid="base_column_list"/>
+        <if test="query.queryUserInfo">
+			,u.nick_name,u.avatar
+		</if>
+        FROM video_info v
+        <if test="query.queryUserInfo">
+			left join user_info u on u.user_id = v.user_id
+		</if>
+        <include refid="query_condition"/>
+        <if test="query.orderBy!=null">
+            order by ${query.orderBy}
+        </if>
+        <if test="query.simplePage!=null">
+            limit #{query.simplePage.start},#{query.simplePage.end}
+        </if>
+    </select>
 
 	<!-- 查询数量-->
 	<select id="selectCount" resultType="java.lang.Integer" >
@@ -833,8 +842,15 @@
  		 </set>
  		 where video_id=#{videoId}
 	</update>
+    <update id="updateCountInfo">
+ 		update video_info set ${field} = ${field} + #{changeCount}
+ 		<if test="field == 'play_count'">
+			, last_play_time = now()
+		</if>
+ 		where video_id = #{videoId}
+	</update>
 
-	<!-- 根据VideoId删除-->
+    <!-- 根据VideoId删除-->
 	<delete id="deleteByVideoId">
 		delete from video_info where video_id=#{videoId}
 	</delete>

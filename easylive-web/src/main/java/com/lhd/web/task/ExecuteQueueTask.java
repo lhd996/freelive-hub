@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 /**
  * @Author: liuhd
  * @Date: 2024/12/8 22:27
- * @Description:
+ * @Description: 异步消费任务
  */
 
 @Component

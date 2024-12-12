@@ -8,14 +8,17 @@ import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.dto.UploadingFileDto;
 import com.lhd.entity.enums.DateTimePatternEnum;
 import com.lhd.entity.enums.ResponseCodeEnum;
+import com.lhd.entity.po.VideoInfoFile;
 import com.lhd.entity.vo.ResponseVO;
 import com.lhd.exception.BusinessException;
+import com.lhd.service.VideoInfoFileService;
 import com.lhd.utils.DateUtil;
 import com.lhd.utils.FFmpegUtils;
 import com.lhd.utils.StringTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,7 +50,8 @@ public class FileController extends ABaseController {
     private RedisComponent redisComponent;
     @Resource
     private FFmpegUtils fFmpegUtils;
-
+    @Resource
+    private VideoInfoFileService videoInfoFileService;
     /**
      * 从本地获取文件
      *
@@ -174,6 +178,48 @@ public class FileController extends ABaseController {
         return getSuccessResponseVO(Constants.FILE_COVER + day + "/" + fileName);
     }
 
+    /**
+     * @description: 获取分p视频的索引文件
+     * @param response 要把文件结果写回这里
+     * @param fileId 分P的id
+     * @return
+     * @author liuhd
+     * 2024/12/10 21:43
+     */
+
+    @RequestMapping("/videoResource/{fileId}")
+    public void videoResource(HttpServletResponse response, @PathVariable @NotEmpty String fileId) {
+        VideoInfoFile videoInfoFile = this.videoInfoFileService.getVideoInfoFileByFileId(fileId);
+        String filePath = videoInfoFile.getFilePath();
+        readFile(response,filePath + "/" + Constants.M3U8_NAME);
+        // TODO 更新视频的阅读信息
+
+    }
+
+    /**
+     * @description: 获取分p视频的ts分片
+     * @param response 将ts分片放入这里
+     * @param fileId 分p视频id
+     * @param ts     ts分片文件名
+     * @return
+     * @author liuhd
+     * 2024/12/10 21:56
+     */
+    @RequestMapping("/videoResource/{fileId}/{ts}")
+    public void videoResourceTs(HttpServletResponse response, @PathVariable @NotEmpty String fileId, @PathVariable @NotEmpty String ts) {
+        VideoInfoFile videoInfoFile = this.videoInfoFileService.getVideoInfoFileByFileId(fileId);
+        String filePath = videoInfoFile.getFilePath();
+        readFile(response,filePath + "/" + ts);
+    }
+
+    /**
+     * @description: 将文件写入response
+     * @param response
+     * @param filePath
+     * @return
+     * @author liuhd
+     * 2024/12/10 21:31
+     */
 
     protected void readFile(HttpServletResponse response, String filePath) {
         File file = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER + filePath);

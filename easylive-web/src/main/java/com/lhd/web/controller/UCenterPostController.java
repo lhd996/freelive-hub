@@ -40,6 +40,24 @@ public class UCenterPostController extends ABaseController{
     @Resource
     private VideoInfoService videoInfoService;
 
+    /**
+     * @description: 发布视频接口
+     * @param request HttpServletRequest
+     * @param videoId 视频id
+     * @param videoCover 视频封面
+     * @param videoName 视频标题
+     * @param pCategoryId 父级分类
+     * @param categoryId 子级分类
+     * @param postType 发布类型（转载or自制）
+     * @param tags 所属标签
+     * @param introduction 介绍
+     * @param interaction  互动设置
+     * @param uploadFileList 分p列表
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2024/12/10 14:06
+     */
+
     @RequestMapping("/postVideo")
     public ResponseVO postVideo(HttpServletRequest request, String videoId,
                                 @NotEmpty String videoCover,

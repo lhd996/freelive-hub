@@ -481,7 +481,7 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
         videoInfoPostQuery.setVideoId(videoId);
         // 更新视频状态
         /*
-             只有status为待审核才能改！！！！
+              只有status为待审核才能改！！！！
               假设现在有两个人同时审核 现在一个人将视频变成审核通过，提交事务  然后另一个人又接着视频变成审核失败，就会导致一致性问题
               为了避免这种情况 我们改的时候必须判断状态是否是待审核
          */
@@ -551,3 +551,5 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
 
     }
 }
+
+

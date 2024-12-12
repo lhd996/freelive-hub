@@ -91,7 +91,7 @@ public class AccountController extends ABaseController {
                 throw new BusinessException("图片验证码错误");
             }
             //  注册
-            userInfoService.register(email, nickName, registerPassword);
+            userInfoService.register(nickName,email, registerPassword);
             return getSuccessResponseVO(null);
         } finally {
             // 删除图片验证码
