@@ -8,9 +8,12 @@ import javax.annotation.Resource;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserActionTypeEnum;
+import com.lhd.entity.po.UserInfo;
 import com.lhd.entity.po.VideoInfo;
+import com.lhd.entity.query.UserInfoQuery;
 import com.lhd.entity.query.VideoInfoQuery;
 import com.lhd.exception.BusinessException;
+import com.lhd.mappers.UserInfoMapper;
 import com.lhd.mappers.VideoInfoMapper;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,8 @@ public class UserActionServiceImpl implements UserActionService {
     private UserActionMapper<UserAction, UserActionQuery> userActionMapper;
     @Resource
     private VideoInfoMapper<VideoInfo, VideoInfoQuery> videoInfoMapper;
+    @Resource
+    private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
 
     /**
      * 根据条件查询列表
@@ -200,7 +205,7 @@ public class UserActionServiceImpl implements UserActionService {
                     userActionMapper.insert(userAction);
                 } else {
                     // 说明是取消
-                    userActionMapper.deleteByActionId(userAction.getActionId());
+                    userActionMapper.deleteByActionId(dbUserAction.getActionId());
                 }
                 // 做是1 取消是-1
                 Integer changeCount = dbUserAction == null ? Constants.ONE : -Constants.ONE;
@@ -209,6 +214,31 @@ public class UserActionServiceImpl implements UserActionService {
                 if (userActionTypeEnum == UserActionTypeEnum.VIDEO_COLLECT){
                     // TODO 更新es的收藏
                 }
+                break;
+            case VIDEO_COIN:
+                // 不能给自己投币
+                if (videoInfo.getUserId().equals(userAction.getUserId())){
+                    throw new BusinessException("UP主不能给自己投币");
+                }
+                // 如果投过币了
+                if (dbUserAction != null){
+                    throw new BusinessException("一个视频只能投一次币");
+                }
+                // 没投过 将行为插入用户行为表  增加视频投币数 增加UP硬币数 减少用户硬币数
+                  // 减少自己的硬币
+                Integer userRes = userInfoMapper.updateCoinCountInfo(userAction.getUserId(), -userAction.getActionCount());
+                if (userRes == 0){
+                    throw new BusinessException("您的硬币不够");
+                }
+                  // UP主增加硬币
+                Integer UPRes = userInfoMapper.updateCoinCountInfo(videoInfo.getUserId(), userAction.getActionCount());
+                if (UPRes == 0){
+                    throw new BusinessException("投币失败");
+                }
+                  // 将行为插入用户行为表
+                userActionMapper.insert(userAction);
+                  // 增加视频投币数
+                videoInfoMapper.updateCountInfo(videoInfo.getVideoId(), userActionTypeEnum.getField(), userAction.getActionCount());
                 break;
         }
     }
