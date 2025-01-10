@@ -2,6 +2,8 @@ package com.lhd.mappers;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 评论 数据库操作接口
  */
@@ -24,5 +26,8 @@ public interface VideoCommentMapper<T,P> extends BaseMapper<T,P> {
 	 */
 	 T selectByCommentId(@Param("commentId") Integer commentId);
 
+	 List<T>selectListWithChildren(@Param("query") P p);
 
+	 void updateCountInfo(@Param("commentId") Integer commentId,@Param("field") String field,@Param("changeCount")Integer changeCount,
+						  @Param("opposeField") String opposeField,@Param("opposeChangeCount")Integer opposeChangeCount);
 }

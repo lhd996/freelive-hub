@@ -9,19 +9,18 @@ import com.lhd.entity.constants.Constants;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserActionTypeEnum;
 import com.lhd.entity.po.UserInfo;
+import com.lhd.entity.po.VideoComment;
 import com.lhd.entity.po.VideoInfo;
-import com.lhd.entity.query.UserInfoQuery;
-import com.lhd.entity.query.VideoInfoQuery;
+import com.lhd.entity.query.*;
 import com.lhd.exception.BusinessException;
 import com.lhd.mappers.UserInfoMapper;
+import com.lhd.mappers.VideoCommentMapper;
 import com.lhd.mappers.VideoInfoMapper;
 import org.springframework.stereotype.Service;
 
 import com.lhd.entity.enums.PageSize;
-import com.lhd.entity.query.UserActionQuery;
 import com.lhd.entity.po.UserAction;
 import com.lhd.entity.vo.PaginationResultVO;
-import com.lhd.entity.query.SimplePage;
 import com.lhd.mappers.UserActionMapper;
 import com.lhd.service.UserActionService;
 import com.lhd.utils.StringTools;
@@ -40,7 +39,8 @@ public class UserActionServiceImpl implements UserActionService {
     private VideoInfoMapper<VideoInfo, VideoInfoQuery> videoInfoMapper;
     @Resource
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
-
+    @Resource
+    private VideoCommentMapper<VideoComment, VideoCommentQuery> videoCommentMapper;
     /**
      * 根据条件查询列表
      */
@@ -211,34 +211,60 @@ public class UserActionServiceImpl implements UserActionService {
                 Integer changeCount = dbUserAction == null ? Constants.ONE : -Constants.ONE;
                 // 然后更新视频表
                 videoInfoMapper.updateCountInfo(userAction.getVideoId(), userActionTypeEnum.getField(), changeCount);
-                if (userActionTypeEnum == UserActionTypeEnum.VIDEO_COLLECT){
+                if (userActionTypeEnum == UserActionTypeEnum.VIDEO_COLLECT) {
                     // TODO 更新es的收藏
                 }
                 break;
             case VIDEO_COIN:
                 // 不能给自己投币
-                if (videoInfo.getUserId().equals(userAction.getUserId())){
+                if (videoInfo.getUserId().equals(userAction.getUserId())) {
                     throw new BusinessException("UP主不能给自己投币");
                 }
                 // 如果投过币了
-                if (dbUserAction != null){
+                if (dbUserAction != null) {
                     throw new BusinessException("一个视频只能投一次币");
                 }
                 // 没投过 将行为插入用户行为表  增加视频投币数 增加UP硬币数 减少用户硬币数
-                  // 减少自己的硬币
+                // 减少自己的硬币
                 Integer userRes = userInfoMapper.updateCoinCountInfo(userAction.getUserId(), -userAction.getActionCount());
-                if (userRes == 0){
+                if (userRes == 0) {
                     throw new BusinessException("您的硬币不够");
                 }
-                  // UP主增加硬币
+                // UP主增加硬币
                 Integer UPRes = userInfoMapper.updateCoinCountInfo(videoInfo.getUserId(), userAction.getActionCount());
-                if (UPRes == 0){
+                if (UPRes == 0) {
                     throw new BusinessException("投币失败");
                 }
-                  // 将行为插入用户行为表
+                // 将行为插入用户行为表
                 userActionMapper.insert(userAction);
-                  // 增加视频投币数
+                // 增加视频投币数
                 videoInfoMapper.updateCountInfo(videoInfo.getVideoId(), userActionTypeEnum.getField(), userAction.getActionCount());
+                break;
+            case COMMENT_LIKE:
+            case COMMENT_HATE:
+                // 查询对立动作
+                UserActionTypeEnum opposeEnum = UserActionTypeEnum.COMMENT_LIKE == userActionTypeEnum ? UserActionTypeEnum.COMMENT_HATE : UserActionTypeEnum.COMMENT_LIKE;
+                UserAction opposeAction = userActionMapper.selectByVideoIdAndCommentIdAndActionTypeAndUserId(userAction.getVideoId(), userAction.getCommentId(),
+                        opposeEnum.getType(), userAction.getUserId());
+                // 对立动作不为空的话
+                if (opposeAction != null) {
+                    // 删除这条记录,因为此时是要触发我们当前动作
+                    userActionMapper.deleteByActionId(opposeAction.getActionId());
+                }
+                // 如果当前用户动作不空的话
+                if (dbUserAction != null) {
+                    // 说明是取消动作
+                    userActionMapper.deleteByActionId(dbUserAction.getActionId());
+                } else {
+                    // 动作为空的话 触发动作
+                    userActionMapper.insert(userAction);
+                }
+                // 当前动作加一还是减一
+                changeCount = dbUserAction == null ? Constants.ONE:-Constants.ONE;
+
+                // 更新评论的点赞或点踩数量
+                videoCommentMapper.updateCountInfo(userAction.getCommentId(), userActionTypeEnum.getField(), changeCount,
+                        opposeAction == null ? null : opposeEnum.getField(),-1);
                 break;
         }
     }
