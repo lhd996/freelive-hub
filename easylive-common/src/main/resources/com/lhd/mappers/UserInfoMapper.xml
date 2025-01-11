@@ -5,15 +5,17 @@
 
     <!--实体映射-->
     <resultMap id="base_result_map" type="com.lhd.entity.po.UserInfo">
-        <!--用户id-->
+        <!--用户ID-->
         <result column="user_id" property="userId"/>
         <!--昵称-->
         <result column="nick_name" property="nickName"/>
+        <!--头像-->
+        <result column="avatar" property="avatar"/>
         <!--邮箱-->
         <result column="email" property="email"/>
         <!--密码-->
         <result column="password" property="password"/>
-        <!--0：女，1：男，2：未知-->
+        <!--0:女 1:男 2:保密-->
         <result column="sex" property="sex"/>
         <!--出生日期-->
         <result column="birthday" property="birthday"/>
@@ -25,9 +27,9 @@
         <result column="join_time" property="joinTime"/>
         <!--最后登录时间-->
         <result column="last_login_time" property="lastLoginTime"/>
-        <!--最后登录ip-->
+        <!--最后登录IP-->
         <result column="last_login_ip" property="lastLoginIp"/>
-        <!--0:禁用，1：正常-->
+        <!--0:禁用 1:正常-->
         <result column="status" property="status"/>
         <!--空间公告-->
         <result column="notice_info" property="noticeInfo"/>
@@ -35,17 +37,17 @@
         <result column="total_coin_count" property="totalCoinCount"/>
         <!--当前硬币数-->
         <result column="current_coin_count" property="currentCoinCount"/>
-        <!--背景主题-->
+        <!--主题-->
         <result column="theme" property="theme"/>
     </resultMap>
 
 
     <!-- 通用查询结果列-->
     <sql id="base_column_list">
-        u.user_id,u.nick_name,u.email,u.password,u.sex,
-		 u.birthday,u.school,u.person_introduction,u.join_time,u.last_login_time,
-		 u.last_login_ip,u.status,u.notice_info,u.total_coin_count,u.current_coin_count,
-		 u.theme
+        u.user_id,u.nick_name,u.avatar,u.email,u.password,
+        u.sex,u.birthday,u.school,u.person_introduction,u.join_time,
+        u.last_login_time,u.last_login_ip,u.status,u.notice_info,u.total_coin_count,
+        u.current_coin_count,u.theme
     </sql>
 
     <sql id="base_condition_filed">
@@ -54,6 +56,9 @@
         </if>
         <if test="query.nickName != null and query.nickName!=''">
             and u.nick_name = #{query.nickName}
+        </if>
+        <if test="query.avatar != null and query.avatar!=''">
+            and u.avatar = #{query.avatar}
         </if>
         <if test="query.email != null and query.email!=''">
             and u.email = #{query.email}
@@ -114,6 +119,9 @@
             </if>
             <if test="query.nickNameFuzzy!= null  and query.nickNameFuzzy!=''">
                 and u.nick_name like concat('%', #{query.nickNameFuzzy}, '%')
+            </if>
+            <if test="query.avatarFuzzy!= null  and query.avatarFuzzy!=''">
+                and u.avatar like concat('%', #{query.avatarFuzzy}, '%')
             </if>
             <if test="query.emailFuzzy!= null  and query.emailFuzzy!=''">
                 and u.email like concat('%', #{query.emailFuzzy}, '%')
@@ -181,6 +189,9 @@
             <if test="bean.nickName != null">
                 nick_name,
             </if>
+            <if test="bean.avatar != null">
+                avatar,
+            </if>
             <if test="bean.email != null">
                 email,
             </if>
@@ -230,6 +241,9 @@
             </if>
             <if test="bean.nickName!=null">
                 #{bean.nickName},
+            </if>
+            <if test="bean.avatar!=null">
+                #{bean.avatar},
             </if>
             <if test="bean.email!=null">
                 #{bean.email},
@@ -286,6 +300,9 @@
             <if test="bean.nickName != null">
                 nick_name,
             </if>
+            <if test="bean.avatar != null">
+                avatar,
+            </if>
             <if test="bean.email != null">
                 email,
             </if>
@@ -335,6 +352,9 @@
             </if>
             <if test="bean.nickName!=null">
                 #{bean.nickName},
+            </if>
+            <if test="bean.avatar!=null">
+                #{bean.avatar},
             </if>
             <if test="bean.email!=null">
                 #{bean.email},
@@ -387,6 +407,9 @@
             <if test="bean.nickName!=null">
                 nick_name = VALUES(nick_name),
             </if>
+            <if test="bean.avatar!=null">
+                avatar = VALUES(avatar),
+            </if>
             <if test="bean.email!=null">
                 email = VALUES(email),
             </if>
@@ -437,6 +460,7 @@
         INSERT INTO user_info(
         user_id,
         nick_name,
+        avatar,
         email,
         password,
         sex,
@@ -456,6 +480,7 @@
             (
             #{item.userId},
             #{item.nickName},
+            #{item.avatar},
             #{item.email},
             #{item.password},
             #{item.sex},
@@ -479,6 +504,7 @@
         INSERT INTO user_info(
         user_id,
         nick_name,
+        avatar,
         email,
         password,
         sex,
@@ -498,6 +524,7 @@
             (
             #{item.userId},
             #{item.nickName},
+            #{item.avatar},
             #{item.email},
             #{item.password},
             #{item.sex},
@@ -517,6 +544,7 @@
         on DUPLICATE key update
         user_id = VALUES(user_id),
         nick_name = VALUES(nick_name),
+        avatar = VALUES(avatar),
         email = VALUES(email),
         password = VALUES(password),
         sex = VALUES(sex),
@@ -542,6 +570,9 @@
             </if>
             <if test="bean.nickName != null">
                 nick_name = #{bean.nickName},
+            </if>
+            <if test="bean.avatar != null">
+                avatar = #{bean.avatar},
             </if>
             <if test="bean.email != null">
                 email = #{bean.email},
@@ -602,6 +633,9 @@
             <if test="bean.nickName != null">
                 nick_name = #{bean.nickName},
             </if>
+            <if test="bean.avatar != null">
+                avatar = #{bean.avatar},
+            </if>
             <if test="bean.email != null">
                 email = #{bean.email},
             </if>
@@ -650,9 +684,7 @@
 
     <!-- 根据UserId删除-->
     <delete id="deleteByUserId">
-        delete
-        from user_info
-        where user_id = #{userId}
+        delete from user_info where user_id=#{userId}
     </delete>
 
     <!-- 根据PrimaryKey获取对象-->
@@ -671,6 +703,9 @@
             </if>
             <if test="bean.nickName != null">
                 nick_name = #{bean.nickName},
+            </if>
+            <if test="bean.avatar != null">
+                avatar = #{bean.avatar},
             </if>
             <if test="bean.password != null">
                 password = #{bean.password},
@@ -717,9 +752,7 @@
 
     <!-- 根据Email删除-->
     <delete id="deleteByEmail">
-        delete
-        from user_info
-        where email = #{email}
+        delete from user_info where email=#{email}
     </delete>
 
     <!-- 根据PrimaryKey获取对象-->
@@ -735,6 +768,9 @@
         <set>
             <if test="bean.userId != null">
                 user_id = #{bean.userId},
+            </if>
+            <if test="bean.avatar != null">
+                avatar = #{bean.avatar},
             </if>
             <if test="bean.email != null">
                 email = #{bean.email},
@@ -781,22 +817,10 @@
         </set>
         where nick_name=#{nickName}
     </update>
-    <update id="updateCoinCountInfo">
-        update user_info
-        <set>
-            current_coin_count = current_coin_count + #{changeCount}
-            <if test="changeCount > 0">
-                ,total_coin_count = total_coin_count + #{changeCount}
-            </if>
-        where user_id = #{userId} and current_coin_count + #{changeCount} >= 0
-        </set>
-    </update>
 
     <!-- 根据NickName删除-->
     <delete id="deleteByNickName">
-        delete
-        from user_info
-        where nick_name = #{nickName}
+        delete from user_info where nick_name=#{nickName}
     </delete>
 
     <!-- 根据PrimaryKey获取对象-->
@@ -805,5 +829,15 @@
         <include refid="base_column_list"/>
         from user_info u where nick_name=#{nickName}
     </select>
-
+    <update id="updateCoinCountInfo">
+        update user_info
+        <set>
+            current_coin_count = current_coin_count+ #{changeCount}
+            <!--总硬币数只增不减-->
+            <if test="changeCount>0">
+                ,total_coin_count = total_coin_count+ #{changeCount}
+            </if>
+        </set>
+        where user_id = #{userId} and current_coin_count+#{changeCount}>=0
+    </update>
 </mapper>

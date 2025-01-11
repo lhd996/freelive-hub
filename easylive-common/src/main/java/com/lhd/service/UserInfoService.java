@@ -6,6 +6,7 @@ import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.query.UserInfoQuery;
 import com.lhd.entity.po.UserInfo;
 import com.lhd.entity.vo.PaginationResultVO;
+import org.apache.catalina.User;
 
 
 /**
@@ -117,4 +118,25 @@ public interface UserInfoService {
 	void register(String nickName,String email,String registerPassword);
 
 	TokenUserInfoDto login(String email, String password, String ip);
+	/**
+	 * @description: 获取主页用户信息
+	 * @param currentUserId 当前用户id
+	 * @param userId 被访问的用户id
+	 * @return com.lhd.entity.po.UserInfo
+	 * @author liuhd
+	 * 2025/1/11 13:31
+	 */
+
+	UserInfo getUserDetailInfo(String currentUserId,String userId);
+
+	/**
+	 * @description: 更新用户信息
+	 * @param userInfo
+	 * @param tokenUserInfoDto
+	 * @return
+	 * @author liuhd
+	 * 2025/1/11 14:04
+	 */
+
+	void updateUserInfo(UserInfo userInfo,TokenUserInfoDto tokenUserInfoDto);
 }

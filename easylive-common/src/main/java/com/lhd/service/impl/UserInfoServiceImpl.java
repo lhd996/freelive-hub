@@ -8,10 +8,12 @@ import javax.annotation.Resource;
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserSexEnum;
 import com.lhd.entity.enums.UserStatuseEnum;
 import com.lhd.exception.BusinessException;
 import com.lhd.utils.CopyTools;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.stereotype.Service;
 
 import com.lhd.entity.enums.PageSize;
@@ -22,6 +24,7 @@ import com.lhd.entity.query.SimplePage;
 import com.lhd.mappers.UserInfoMapper;
 import com.lhd.service.UserInfoService;
 import com.lhd.utils.StringTools;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -258,5 +261,48 @@ public class UserInfoServiceImpl implements UserInfoService {
 		redisComponent.saveTokenInfo(tokenUserInfoDto);
 
 		return tokenUserInfoDto;
+	}
+
+
+	@Override
+	public UserInfo getUserDetailInfo(String currentUserId, String userId) {
+		UserInfo userInfo = getUserInfoByUserId(userId);
+		if (null == userInfo){
+			throw new BusinessException(ResponseCodeEnum.CODE_404);
+		}
+		// TODO 粉丝相关
+		return userInfo;
+	}
+
+	@Override
+	@Transactional
+	public void updateUserInfo(UserInfo userInfo, TokenUserInfoDto tokenUserInfoDto) {
+		UserInfo dbInfo = this.userInfoMapper.selectByUserId(userInfo.getUserId());
+		if (!dbInfo.getNickName().equals(userInfo.getNickName()) && dbInfo.getCurrentCoinCount() < Constants.UPDATE_NICK_NAME_COIN){
+			throw new BusinessException("硬币不足，无法修改昵称");
+		}
+		if (!dbInfo.getNickName().equals(userInfo.getNickName())){
+			Integer count = this.userInfoMapper.updateCoinCountInfo(userInfo.getUserId(),-Constants.UPDATE_NICK_NAME_COIN);
+			if (count == 0){
+				throw new BusinessException("硬币不足，无法修改昵称");
+			}
+		}
+		this.userInfoMapper.updateByUserId(userInfo, userInfo.getUserId());
+
+		Boolean updateTokenInfo = false;
+		// 更新token中的信息
+
+		if (!userInfo.getAvatar().equals(tokenUserInfoDto.getAvatar())){
+			tokenUserInfoDto.setAvatar(userInfo.getAvatar());
+			updateTokenInfo = true;
+		}
+		if (!userInfo.getNickName().equals(tokenUserInfoDto.getNickName())){
+			tokenUserInfoDto.setNickName(userInfo.getNickName());
+			updateTokenInfo = true;
+		}
+		// 更新redis中的token
+		if (updateTokenInfo){
+			redisComponent.updateTokenInfo(tokenUserInfoDto);
+		}
 	}
 }

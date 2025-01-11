@@ -94,6 +94,18 @@ public class RedisComponent {
         // 将token信息存入redis
         redisUtils.setex(Constants.REDIS_KEY_TOKEN_WEB + token, tokenUserInfoDto, Constants.REDIS_KEY_EXPIRES_SEVEN_DAY);
     }
+    /**
+     * @description: 更新token信息
+     * @param tokenUserInfoDto
+     * @return
+     * @author liuhd
+     * 2025/1/11 14:19
+     */
+    public void updateTokenInfo(TokenUserInfoDto tokenUserInfoDto){
+
+        // 将token信息存入redis
+        redisUtils.setex(Constants.REDIS_KEY_TOKEN_WEB + tokenUserInfoDto.getToken(), tokenUserInfoDto, Constants.REDIS_KEY_EXPIRES_SEVEN_DAY);
+    }
 
     /**
      * 从redis中删除token

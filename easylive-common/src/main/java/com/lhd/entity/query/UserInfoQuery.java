@@ -24,6 +24,29 @@ public class UserInfoQuery extends BaseParam {
 	private String nickNameFuzzy;
 
 	/**
+	 * 头像
+	 */
+	private String avatar;
+
+	private String avatarFuzzy;
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	public String getAvatarFuzzy() {
+		return avatarFuzzy;
+	}
+
+	public void setAvatarFuzzy(String avatarFuzzy) {
+		this.avatarFuzzy = avatarFuzzy;
+	}
+
+	/**
 	 * 邮箱
 	 */
 	private String email;
