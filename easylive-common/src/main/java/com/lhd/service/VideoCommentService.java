@@ -68,5 +68,45 @@ public interface VideoCommentService {
 	 * 根据CommentId删除
 	 */
 	Integer deleteVideoCommentByCommentId(Integer commentId);
+	/**
+	 * @description: 发布评论
+	 * @param comment
+	 * @param replyCommentId
+	 * @return
+	 * @author liuhd
+	 * 2025/1/10 22:59
+	 */
+
 	void postComment(VideoComment comment,Integer replyCommentId);
+	/**
+	 * @description: 置顶评论
+	 * @param commentId
+	 * @param userId
+	 * @return
+	 * @author liuhd
+	 * 2025/1/10 23:00
+	 */
+
+	void topComment(Integer commentId,String userId);
+	/**
+	 * @description: 取消置顶评论
+	 * @param commentId
+	 * @param userId
+	 * @return
+	 * @author liuhd
+	 * 2025/1/10 23:01
+	 */
+
+	void cancelTopComment(Integer commentId,String userId);
+
+	/**
+	 * @description: 删除评论
+	 * @param commentId
+	 * @param userId
+	 * @return
+	 * @author liuhd
+	 * 2025/1/10 23:31
+	 */
+
+	void deleteComment(Integer commentId,String userId);
 }

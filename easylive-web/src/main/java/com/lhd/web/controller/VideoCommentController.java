@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,5 +166,41 @@ public class VideoCommentController extends ABaseController{
 
         List<VideoComment> videoCommentList = videoCommentService.findListByParam(commentQuery);
         return videoCommentList;
+    }
+
+    /**
+     * @description: 将评论置顶
+     * @param commentId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/10 22:55
+     */
+
+    @RequestMapping("/topComment")
+    public ResponseVO topComment(HttpServletRequest request,@NotNull Integer commentId){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        videoCommentService.topComment(commentId,tokenUserInfoDto.getUserId());
+        return getSuccessResponseVO(null);
+    }
+    /**
+     * @description: 取消置顶评论
+     * @param commentId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/10 22:56
+     */
+
+    @RequestMapping("/cancelTopComment")
+    public ResponseVO cancelTopComment(HttpServletRequest request,@NotNull Integer commentId){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        videoCommentService.cancelTopComment(commentId,tokenUserInfoDto.getUserId());
+        return getSuccessResponseVO(null);
+    }
+
+    @RequestMapping("/userDelComment")
+    public ResponseVO deleteComment(HttpServletRequest request,@NotNull Integer commentId){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        videoCommentService.deleteComment(commentId,tokenUserInfoDto.getUserId());
+        return getSuccessResponseVO(null);
     }
 }

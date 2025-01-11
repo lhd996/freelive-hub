@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.lhd.entity.constants.Constants;
+import com.lhd.entity.enums.CommentTopTypeEnum;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserActionTypeEnum;
 import com.lhd.entity.po.UserInfo;
@@ -25,6 +26,7 @@ import com.lhd.entity.query.SimplePage;
 import com.lhd.mappers.VideoCommentMapper;
 import com.lhd.service.VideoCommentService;
 import com.lhd.utils.StringTools;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -194,6 +196,67 @@ public class VideoCommentServiceImpl implements VideoCommentService {
 		// 增加评论数量（只算一级）
 		if (comment.getpCommentId() == 0){
 			this.videoInfoMapper.updateCountInfo(comment.getVideoId(), UserActionTypeEnum.VIDEO_COMMENT.getField(), 1);
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void topComment(Integer commentId, String userId) {
+		// 取消置顶的评论
+		this.cancelTopComment(commentId,userId);
+		// 将当前评论置顶
+		VideoComment videoComment = new VideoComment();
+		videoComment.setTopType(CommentTopTypeEnum.TOP.getType());
+		videoCommentMapper.updateByCommentId(videoComment,commentId);
+	}
+
+	@Override
+	public void cancelTopComment(Integer commentId, String userId) {
+		VideoComment dbVideoComment = videoCommentMapper.selectByCommentId(commentId);
+		if (dbVideoComment == null){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		VideoInfo videoInfo = videoInfoMapper.selectByVideoId(dbVideoComment.getVideoId());
+		if (videoInfo == null){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		if (!videoInfo.getUserId().equals(userId)){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		VideoComment videoComment = new VideoComment();
+		videoComment.setTopType(CommentTopTypeEnum.NO_TOP.getType());
+
+		VideoCommentQuery videoCommentQuery = new VideoCommentQuery();
+		videoCommentQuery.setVideoId(dbVideoComment.getVideoId());
+		videoCommentQuery.setTopType(CommentTopTypeEnum.TOP.getType());
+
+		videoCommentMapper.updateByParam(videoComment,videoCommentQuery);
+	}
+
+	@Override
+	public void deleteComment(Integer commentId, String userId) {
+		VideoComment comment = videoCommentMapper.selectByCommentId(commentId);
+		if (comment == null){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		VideoInfo videoInfo = videoInfoMapper.selectByVideoId(comment.getVideoId());
+		if (videoInfo == null){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		// 既不是视频发布者 也不是评论的主人
+		if (!videoInfo.getUserId().equals(userId) && !comment.getUserId().equals(userId)){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		videoCommentMapper.deleteByCommentId(commentId);
+
+		// 如果是一级评论
+		if (comment.getpCommentId() == 0){
+			// 评论数减一
+			videoInfoMapper.updateCountInfo(videoInfo.getVideoId(), UserActionTypeEnum.VIDEO_COMMENT.getField(), -1);
+			// 删除二级评论
+			VideoCommentQuery videoCommentQuery = new VideoCommentQuery();
+			videoCommentQuery.setpCommentId(commentId);
+			videoCommentMapper.deleteByParam(videoCommentQuery);
 		}
 	}
 }
