@@ -324,6 +324,36 @@ public class RedisComponent {
     public VideoInfoFilePost getFileFromTransferQueue(){
         return (VideoInfoFilePost) redisUtils.rpop(Constants.REDIS_KEY_QUEUE_TRANSFER);
     }
-    
 
+    /**
+     * @description: 记录在线人数
+     * @param fileId (分片)文件id
+     * @param deviceId 设备id
+     * @return java.lang.Integer
+     * @author liuhd
+     * 2025/1/11 10:47
+     */
+
+    public Integer reportVideoOnline(String fileId,String deviceId){
+        // 当前用户在看的证明
+        String userPlayOnlineKey = String.format(Constants.REDIS_KEY_VIDEO_PLAY_COUNT_USER,fileId,deviceId);
+        // 当前在看的人数
+        String playOnlineCountKey = String.format(Constants.REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE,fileId);
+
+        // 如果用户刚点击这个视频
+        if (!redisUtils.keyExists(userPlayOnlineKey)){
+            // 设置8s的有效期 （我们每5s会轮询发送一次请求来检验用户是否在线,这种技术叫心跳）
+            redisUtils.setex(userPlayOnlineKey,fileId,Constants.REDIS_KEY_EXPIRES_ONE_SECONDS * 8);
+
+            return redisUtils.incrementex(playOnlineCountKey,Constants.REDIS_KEY_EXPIRES_ONE_SECONDS * 10).intValue();
+        }
+        // 如果用户在看 给在线人数续期
+        redisUtils.expire(playOnlineCountKey,Constants.REDIS_KEY_EXPIRES_ONE_SECONDS * 10);
+        redisUtils.expire(userPlayOnlineKey,Constants.REDIS_KEY_EXPIRES_ONE_SECONDS * 8);
+        Integer count = (Integer) redisUtils.get(playOnlineCountKey);
+        return count == null ? 1 : count;
+    }
+    public void decrementPlayOnlineCount(String key){
+        redisUtils.decrement(key);
+    }
 }

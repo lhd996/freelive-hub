@@ -1,5 +1,6 @@
 package com.lhd.web.controller;
 
+import com.lhd.component.RedisComponent;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserActionTypeEnum;
@@ -44,6 +45,8 @@ public class VideoController extends ABaseController {
     private VideoInfoFileService videoInfoFileService;
     @Resource
     private UserActionService userActionService;
+    @Resource
+    private RedisComponent redisComponent;
     /**
      * 加载已推荐视频
      *
@@ -152,6 +155,6 @@ public class VideoController extends ABaseController {
 
     @RequestMapping("/reportVideoPlayOnline")
     public ResponseVO reportVideoPlayOnline(@NotEmpty String fileId,@NotEmpty String deviceId){
-        return getSuccessResponseVO(null);
+        return getSuccessResponseVO(redisComponent.reportVideoOnline(fileId,deviceId));
     }
 }

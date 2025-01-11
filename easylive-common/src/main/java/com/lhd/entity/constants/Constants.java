@@ -19,6 +19,10 @@ public class Constants {
     public static final String REDIS_KEY_CHECK_CODE = REDIS_KEY_PREFIX +  "checkcode:";
     // redis key过期时间,一分钟
     public static final Integer REDIS_KEY_EXPIRES_ONE_MIN = 1000 * 60;
+
+    // 一秒（单位ms）
+    public static final Integer REDIS_KEY_EXPIRES_ONE_SECONDS = 1000;
+
     // redis key过期时间,一天
     public static final Integer REDIS_KEY_EXPIRES_ONE_DAY = REDIS_KEY_EXPIRES_ONE_MIN * 60 * 24;
     // redis key过期时间,七天
@@ -75,4 +79,13 @@ public class Constants {
     //至少包含一个数字。
     //至少包含一个特殊字符（如 !, @, #, $, %, ^, &, *, (, )）。
     public static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
+
+    // 视频在线
+    public static final String REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE_PREIFX = REDIS_KEY_PREFIX + "video:play:online:";
+
+    public static final String REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE = REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE_PREIFX + "count:%s";
+
+    public static final String REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX = "user:";
+
+    public static final String REDIS_KEY_VIDEO_PLAY_COUNT_USER = REDIS_KEY_VIDEO_PLAY_COUNT_ONLINE_PREIFX + REDIS_KEY_VIDEO_PLAY_COUNT_USER_PREFIX + "%s:%s";
 }
