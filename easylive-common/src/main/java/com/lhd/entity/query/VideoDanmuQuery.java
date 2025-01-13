@@ -68,6 +68,27 @@ public class VideoDanmuQuery extends BaseParam {
 	 */
 	private Integer time;
 
+	// 视频作者id
+	private String videoUserId;
+
+	// 是否联查视频信息
+	private Boolean queryVideoInfo;
+
+	public Boolean getQueryVideoInfo() {
+		return queryVideoInfo;
+	}
+
+	public void setQueryVideoInfo(Boolean queryVideoInfo) {
+		this.queryVideoInfo = queryVideoInfo;
+	}
+
+	public String getVideoUserId() {
+		return videoUserId;
+	}
+
+	public void setVideoUserId(String videoUserId) {
+		this.videoUserId = videoUserId;
+	}
 
 	public void setDanmuId(Integer danmuId){
 		this.danmuId = danmuId;

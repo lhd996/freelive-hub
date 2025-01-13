@@ -63,6 +63,34 @@ public class VideoDanmu implements Serializable {
 	 */
 	private Integer time;
 
+	// 以下是关联查询字段
+	private String videoName;
+	private String videoCover;
+	private String nickName;
+
+	public String getVideoName() {
+		return videoName;
+	}
+
+	public void setVideoName(String videoName) {
+		this.videoName = videoName;
+	}
+
+	public String getVideoCover() {
+		return videoCover;
+	}
+
+	public void setVideoCover(String videoCover) {
+		this.videoCover = videoCover;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
 
 	public void setDanmuId(Integer danmuId){
 		this.danmuId = danmuId;

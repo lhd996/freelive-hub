@@ -90,6 +90,9 @@ public class VideoCommentQuery extends BaseParam {
 
 	private String videoNameFuzzy;
 
+
+
+
 	public void setCommentId(Integer commentId) {
 		this.commentId = commentId;
 	}
