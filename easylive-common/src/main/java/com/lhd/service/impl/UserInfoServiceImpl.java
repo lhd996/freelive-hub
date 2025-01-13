@@ -11,7 +11,10 @@ import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserSexEnum;
 import com.lhd.entity.enums.UserStatuseEnum;
+import com.lhd.entity.po.UserFocus;
+import com.lhd.entity.query.UserFocusQuery;
 import com.lhd.exception.BusinessException;
+import com.lhd.mappers.UserFocusMapper;
 import com.lhd.utils.CopyTools;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
 	@Resource
 	private RedisComponent redisComponent;
+	@Resource
+	private UserFocusMapper<UserFocus, UserFocusQuery> userFocusMapper;
 	/**
 	 * 根据条件查询列表
 	 */
@@ -270,7 +275,21 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (null == userInfo){
 			throw new BusinessException(ResponseCodeEnum.CODE_404);
 		}
-		// TODO 粉丝相关
+		// TODO 获赞数 播放数
+
+		// 查询关注数与粉丝数
+		Integer focusCount = userFocusMapper.selectFocusCount(userId);
+		Integer fansCount = userFocusMapper.selectFansCount(userId);
+		userInfo.setFocusCount(focusCount);
+		userInfo.setFansCount(fansCount);
+
+		if (currentUserId == null) {
+			userInfo.setHaveFocus(false);
+		}else {
+			UserFocus userFocus = userFocusMapper.selectByUserIdAndFocusUserId(currentUserId, userId);
+			userInfo.setHaveFocus(userFocus == null ? false : true);
+		}
+
 		return userInfo;
 	}
 

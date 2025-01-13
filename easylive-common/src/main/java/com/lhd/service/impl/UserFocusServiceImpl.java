@@ -1,9 +1,15 @@
 package com.lhd.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.lhd.entity.enums.ResponseCodeEnum;
+import com.lhd.entity.po.UserInfo;
+import com.lhd.entity.query.UserInfoQuery;
+import com.lhd.exception.BusinessException;
+import com.lhd.mappers.UserInfoMapper;
 import org.springframework.stereotype.Service;
 
 import com.lhd.entity.enums.PageSize;
@@ -24,6 +30,8 @@ public class UserFocusServiceImpl implements UserFocusService {
 
 	@Resource
 	private UserFocusMapper<UserFocus, UserFocusQuery> userFocusMapper;
+	@Resource
+	private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
 
 	/**
 	 * 根据条件查询列表
@@ -126,5 +134,31 @@ public class UserFocusServiceImpl implements UserFocusService {
 	@Override
 	public Integer deleteUserFocusByUserIdAndFocusUserId(String userId, String focusUserId) {
 		return this.userFocusMapper.deleteByUserIdAndFocusUserId(userId, focusUserId);
+	}
+
+	@Override
+	public void focusUser(String userId, String focusId) {
+		if (userId.equals(focusId)){
+			throw new BusinessException("不能对自己进行此操作");
+		}
+		UserFocus dbInfo = this.userFocusMapper.selectByUserIdAndFocusUserId(userId, focusId);
+		if (dbInfo != null){
+			return;
+		}
+		UserInfo userInfo = userInfoMapper.selectByUserId(focusId);
+		if (userInfo == null){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		UserFocus userFocus = new UserFocus();
+		userFocus.setUserId(userId);
+		userFocus.setFocusUserId(focusId);
+		userFocus.setFocusTime(new Date());
+		userFocusMapper.insert(userFocus);
+
+	}
+
+	@Override
+	public void cancelFocus(String userId, String focusId) {
+		this.userFocusMapper.deleteByUserIdAndFocusUserId(userId,focusId);
 	}
 }

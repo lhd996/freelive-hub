@@ -57,13 +57,22 @@
 
 	<!-- 查询集合-->
 	<select id="selectList" resultMap="base_result_map" >
-		 SELECT <include refid="base_column_list" /> FROM user_video_series_video u <include refid="query_condition" />
-		 <if test="query.orderBy!=null">
-			 order by ${query.orderBy}
-		 </if>
-		 <if test="query.simplePage!=null">
-			 limit #{query.simplePage.start},#{query.simplePage.end}
-		 </if>
+		SELECT
+		<include refid="base_column_list"/>
+		<if test="query.queryVideoInfo">
+			,v.video_name videoName,v.video_cover videoCover,v.play_count playCount,v.create_time createTime
+		</if>
+		FROM user_video_series_video u
+		<if test="query.queryVideoInfo">
+			inner join video_info v on v.video_id = u.video_id
+		</if>
+		<include refid="query_condition"/>
+		<if test="query.orderBy!=null">
+			order by ${query.orderBy}
+		</if>
+		<if test="query.simplePage!=null">
+			limit #{query.simplePage.start},#{query.simplePage.end}
+		</if>
 	</select>
 
 	<!-- 查询数量-->
@@ -241,6 +250,9 @@
 	<!-- 根据PrimaryKey获取对象-->
 	<select id="selectBySeriesIdAndVideoId" resultMap="base_result_map" >
 		select <include refid="base_column_list" /> from user_video_series_video u where series_id=#{seriesId} and video_id=#{videoId}
+	</select>
+	<select id="selectMaxSort" resultType="java.lang.Integer">
+		select ifnull(max(sort),0) from user_video_series_video where series_id = #{seriesId}
 	</select>
 
 </mapper>

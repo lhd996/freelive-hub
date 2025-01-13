@@ -1,6 +1,7 @@
 package com.lhd.entity.query;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -149,6 +150,28 @@ public class VideoInfoQuery extends BaseParam {
 
 	// 是否添加user信息相关查询参数
 	private Boolean queryUserInfo;
+
+	// 视频id数组
+	private String[] videoIdArray;
+
+	// 排除的视频id
+	private String[] excludeVideoIdArray;
+
+	public String[] getExcludeVideoIdArray() {
+		return excludeVideoIdArray;
+	}
+
+	public void setExcludeVideoIdArray(String[] excludeVideoIdArray) {
+		this.excludeVideoIdArray = excludeVideoIdArray;
+	}
+
+	public String[] getVideoIdArray() {
+		return videoIdArray;
+	}
+
+	public void setVideoIdArray(String[] videoIdArray) {
+		this.videoIdArray = videoIdArray;
+	}
 
 	public Boolean getQueryUserInfo() {
 		return queryUserInfo;

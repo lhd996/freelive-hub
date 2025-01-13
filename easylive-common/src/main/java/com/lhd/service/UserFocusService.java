@@ -69,4 +69,25 @@ public interface UserFocusService {
 	 */
 	Integer deleteUserFocusByUserIdAndFocusUserId(String userId,String focusUserId);
 
+	/**
+	 * @description: 关注用户
+	 * @param userId 当前用户
+	 * @param focusId 要关注的用户
+	 * @return
+	 * @author liuhd
+	 * 2025/1/11 14:52
+	 */
+
+	void focusUser(String userId,String focusId);
+
+	/**
+	 * @description: 取消关注
+	 * @param userId 当前用户
+	 * @param focusId 要关注的用户
+	 * @return
+	 * @author liuhd
+	 * 2025/1/11 14:52
+	 */
+
+	void cancelFocus(String userId,String focusId);
 }

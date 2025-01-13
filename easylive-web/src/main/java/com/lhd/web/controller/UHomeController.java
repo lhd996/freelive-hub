@@ -2,8 +2,17 @@ package com.lhd.web.controller;
 
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.enums.PageSize;
+import com.lhd.entity.enums.UserActionTypeEnum;
+import com.lhd.entity.enums.VideoOrderTypeEnum;
 import com.lhd.entity.po.UserAction;
+import com.lhd.entity.po.UserFocus;
 import com.lhd.entity.po.UserInfo;
+import com.lhd.entity.po.VideoInfo;
+import com.lhd.entity.query.UserActionQuery;
+import com.lhd.entity.query.UserFocusQuery;
+import com.lhd.entity.query.VideoInfoQuery;
+import com.lhd.entity.vo.PaginationResultVO;
 import com.lhd.entity.vo.ResponseVO;
 import com.lhd.entity.vo.UserInfoVO;
 import com.lhd.service.UserActionService;
@@ -96,6 +105,14 @@ public class UHomeController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
+    /**
+     * @description: 更换主题
+     * @param request
+     * @param theme
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/11 15:01
+     */
 
     @RequestMapping("/saveTheme")
     public ResponseVO saveTheme(HttpServletRequest request,
@@ -105,5 +122,133 @@ public class UHomeController extends ABaseController {
         userInfo.setTheme(theme);
         userInfoService.updateUserInfoByUserId(userInfo,tokenUserInfoDto.getUserId());
         return getSuccessResponseVO(null);
+    }
+
+    /**
+     * @description: 关注
+     * @param request
+     * @param focusUserId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/11 15:01
+     */
+
+    @RequestMapping("/focus")
+    public ResponseVO focus(HttpServletRequest request,String focusUserId){
+        userFocusService.focusUser(getTokenUserInfoDto(request).getUserId(),focusUserId);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * @description: 取消关注
+     * @param request
+     * @param focusUserId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/11 15:02
+     */
+
+    @RequestMapping("/cancelFocus")
+    public ResponseVO cancelFocus(HttpServletRequest request,String focusUserId){
+        userFocusService.cancelFocus(getTokenUserInfoDto(request).getUserId(),focusUserId);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * @description: 查询关注列表
+     * @param request
+     * @param pageNo
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/11 15:33
+     */
+    @RequestMapping("/loadFocusList")
+    public ResponseVO loadFocusList(HttpServletRequest request,Integer pageNo){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+
+        UserFocusQuery userFocusQuery = new UserFocusQuery();
+        userFocusQuery.setUserId(tokenUserInfoDto.getUserId());
+        userFocusQuery.setPageNo(pageNo);
+        userFocusQuery.setOrderBy("focus_time desc");
+        userFocusQuery.setQueryType(Constants.ZERO);
+        PaginationResultVO<UserFocus> resultVO = userFocusService.findListByPage(userFocusQuery);
+        return getSuccessResponseVO(resultVO);
+    }
+
+    /**
+     * @description: 查询粉丝列表
+     * @param request
+     * @param pageNo
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/11 16:58
+     */
+
+    @RequestMapping("/loadFansList")
+    public ResponseVO loadFansList(HttpServletRequest request,Integer pageNo){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+
+        UserFocusQuery userFocusQuery = new UserFocusQuery();
+        userFocusQuery.setFocusUserId(tokenUserInfoDto.getUserId());
+        userFocusQuery.setPageNo(pageNo);
+        userFocusQuery.setOrderBy("focus_time desc");
+        userFocusQuery.setQueryType(Constants.ONE);
+        PaginationResultVO<UserFocus> resultVO = userFocusService.findListByPage(userFocusQuery);
+        return getSuccessResponseVO(resultVO);
+    }
+
+    /**
+     * @description:
+     * @param userId 谁的主页
+     * @param pageNo 可选参数 页号
+     * @param type
+     * @param videoName 视频名称（可根据该字段搜索视频）
+     * @param orderType 排序字段（最新发布，最多播放，最多收藏）
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/12 19:40
+     */
+
+    @RequestMapping("/loadVideoList")
+    public ResponseVO loadFansList(@NotEmpty String userId,
+                                   Integer pageNo,
+                                   Integer type,
+                                   String videoName,
+                                   Integer orderType){
+        VideoInfoQuery videoInfoQuery = new VideoInfoQuery();
+        if (type != null){
+            videoInfoQuery.setPageSize(PageSize.SIZE10.getSize());
+        }
+        VideoOrderTypeEnum videoOrderTypeEnum = VideoOrderTypeEnum.getByType(orderType);
+        if (videoOrderTypeEnum == null){
+            videoOrderTypeEnum = VideoOrderTypeEnum.CREATE_TIME;
+        }
+        videoInfoQuery.setOrderBy(videoOrderTypeEnum.getField() + " desc");
+        videoInfoQuery.setVideoNameFuzzy(videoName);
+        videoInfoQuery.setPageNo(pageNo);
+        videoInfoQuery.setUserId(userId);
+        PaginationResultVO<VideoInfo> resultVO = videoInfoService.findListByPage(videoInfoQuery);
+        return getSuccessResponseVO(resultVO);
+    }
+    /**
+     * @description: 查询收藏列表
+     * @param userId 谁的主页
+     * @param pageNo 页号
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/12 20:00
+     */
+
+    @RequestMapping("/loadUserCollection")
+    public ResponseVO loadFansList(@NotEmpty String userId, Integer pageNo){
+        UserActionQuery actionQuery = new UserActionQuery();
+        actionQuery.setActionType(UserActionTypeEnum.VIDEO_COLLECT.getType());
+        actionQuery.setUserId(userId);
+        actionQuery.setPageNo(pageNo);
+        actionQuery.setOrderBy("action_time desc");
+        actionQuery.setQueryVideoInfo(true);
+        PaginationResultVO<UserAction> resultVO = userActionService.findListByPage(actionQuery);
+
+        return getSuccessResponseVO(resultVO);
     }
 }

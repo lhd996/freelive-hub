@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -48,6 +49,27 @@ public class UserVideoSeries implements Serializable {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
 
+	// 合集封面
+
+	private String cover;
+
+	List<UserVideoSeriesVideo> videoInfoList;
+
+	public List<UserVideoSeriesVideo> getVideoInfoList() {
+		return videoInfoList;
+	}
+
+	public void setVideoInfoList(List<UserVideoSeriesVideo> videoInfoList) {
+		this.videoInfoList = videoInfoList;
+	}
+
+	public String getCover() {
+		return cover;
+	}
+
+	public void setCover(String cover) {
+		this.cover = cover;
+	}
 
 	public void setSeriesId(Integer seriesId){
 		this.seriesId = seriesId;

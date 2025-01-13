@@ -293,6 +293,11 @@
  		 </set>
  		 where series_id=#{seriesId}
 	</update>
+	<update id="changeSort">
+        <foreach collection="videoSeriesList" separator=";" item="item">
+			update user_video_series set sort = #{item.sort} where user_id = #{item.userId} and series_id = #{item.seriesId}
+		</foreach>
+    </update>
 
 	<!-- 根据SeriesId删除-->
 	<delete id="deleteBySeriesId">
@@ -302,6 +307,59 @@
 	<!-- 根据PrimaryKey获取对象-->
 	<select id="selectBySeriesId" resultMap="base_result_map" >
 		select <include refid="base_column_list" /> from user_video_series u where series_id=#{seriesId}
+	</select>
+    <select id="selectUserAllSeries" resultMap="base_result_map">
+		SELECT
+			t.*,
+			v.video_cover cover
+		FROM
+			(
+				SELECT
+					*,(
+					SELECT
+						video_id
+					FROM
+						user_video_series_video v
+					WHERE
+						v.series_id = s.series_id
+					ORDER BY
+						sort ASC
+					LIMIT 1
+				) video_id
+				FROM
+					user_video_series s
+				WHERE
+					s.user_id = #{userId}
+			) t
+				LEFT JOIN video_info v ON v.video_id = t.video_id order by t.sort asc
+	</select>
+	<select id="selectMaxSort" resultType="java.lang.Integer">
+		select ifnull(max(sort),0) from user_video_series where user_id = #{userId}
+	</select>
+
+	<!--查询所有系列和系列下的视频-->
+	<resultMap id="base_result_map_video" type="com.lhd.entity.po.UserVideoSeries" extends="base_result_map">
+		<collection property="videoInfoList" column="series_id" select="com.lhd.mappers.UserVideoSeriesMapper.selectVideoList">
+		</collection>
+	</resultMap>
+
+	<select id="selectVideoList" resultType="com.lhd.entity.po.VideoInfo">
+		select v.video_id,v.video_name,v.video_cover,v.play_count,v.create_time
+		from user_video_series_video sv inner join video_info v on sv.video_id=v.video_id
+		where sv.series_id = #{seriesId} order by sv.sort asc limit 5
+	</select>
+
+	<select id="seriesListWithVideo" resultMap="base_result_map_video">
+		SELECT
+		<include refid="base_column_list"/>
+		FROM user_video_series u
+		<include refid="query_condition"/>
+		<if test="query.orderBy!=null">
+			order by ${query.orderBy}
+		</if>
+		<if test="query.simplePage!=null">
+			limit #{query.simplePage.start},#{query.simplePage.end}
+		</if>
 	</select>
 
 </mapper>

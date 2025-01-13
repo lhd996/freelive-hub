@@ -62,6 +62,17 @@ public class UserActionQuery extends BaseParam {
 	// 行为数组
 	private Integer[] actionTypeArray;
 
+	// 是否联查查询视频信息
+	private Boolean queryVideoInfo;
+
+	public Boolean getQueryVideoInfo() {
+		return queryVideoInfo;
+	}
+
+	public void setQueryVideoInfo(Boolean queryVideoInfo) {
+		this.queryVideoInfo = queryVideoInfo;
+	}
+
 	public Integer[] getActionTypeArray() {
 		return actionTypeArray;
 	}

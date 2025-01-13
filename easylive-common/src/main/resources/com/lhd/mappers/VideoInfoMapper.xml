@@ -182,6 +182,13 @@
 			<if test="query.lastPlayTimeEnd!= null and query.lastPlayTimeEnd!=''">
 				 <![CDATA[ and  v.last_play_time< date_sub(str_to_date(#{query.lastPlayTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
 			</if>
+			 <if test="query.videoIdArray != null and query.videoIdArray.length > 0">
+				 and v.video_id in (<foreach collection="query.videoIdArray" separator="," item="item">#{item}</foreach>)
+			 </if>
+			<if test="query.excludeVideoIdArray!=null and query.excludeVideoIdArray.length > 0">
+				and v.video_id not in (<foreach collection="query.excludeVideoIdArray" separator="," item="item">#{item}</foreach>)
+			</if>
+
 	 </where>
 	</sql>
 
