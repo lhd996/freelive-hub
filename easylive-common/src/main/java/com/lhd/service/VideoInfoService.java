@@ -69,4 +69,26 @@ public interface VideoInfoService {
 	 */
 	Integer deleteVideoInfoByVideoId(String videoId);
 
+	/**
+	 * @description:
+	 * @param videoId
+	 * @param userId
+	 * @param interaction
+	 * @return
+	 * @author liuhd
+	 * 2025/1/13 16:26
+	 */
+
+	void changeInteraction(String videoId,String userId,String interaction);
+
+	/**
+	 * @description: 删除视频
+	 * @param videoId
+	 * @param userId
+	 * @return
+	 * @author liuhd
+	 * 2025/1/13 16:34
+	 */
+
+	void deleteVideo(String videoId,String userId);
 }

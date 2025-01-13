@@ -1,12 +1,16 @@
 package com.lhd.web.controller;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.VideoStatusEnum;
 import com.lhd.entity.po.VideoInfoFilePost;
 import com.lhd.entity.po.VideoInfoPost;
+import com.lhd.entity.query.VideoInfoFilePostQuery;
 import com.lhd.entity.query.VideoInfoPostQuery;
 import com.lhd.entity.vo.PaginationResultVO;
 import com.lhd.entity.vo.ResponseVO;
+import com.lhd.entity.vo.VideoPostEditInfoVo;
 import com.lhd.entity.vo.VideoStatusCountInfoVO;
+import com.lhd.exception.BusinessException;
 import com.lhd.service.VideoInfoFilePostService;
 import com.lhd.service.VideoInfoPostService;
 import com.lhd.service.VideoInfoService;
@@ -145,6 +149,61 @@ public class UCenterPostController extends ABaseController{
         countInfoVO.setAuditPassCount(auditPassCount);
         countInfoVO.setInProgress(inProgress);
         return getSuccessResponseVO(countInfoVO);
+    }
+
+    /**
+     * @description: 获取视频的信息
+     * @param request
+     * @param videoId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/13 16:04
+     */
+
+    @RequestMapping("/getVideoByVideoId")
+    public ResponseVO getVideoByVideoId(HttpServletRequest request,@NotEmpty String videoId){
+        // 获取视频信息
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        VideoInfoPost videoInfoPost = videoInfoPostService.getVideoInfoPostByVideoId(videoId);
+        if (videoInfoPost == null || !videoInfoPost.getUserId().equals(tokenUserInfoDto.getUserId())){
+            throw new BusinessException(ResponseCodeEnum.CODE_404);
+        }
+        // 获取分p信息
+        VideoInfoFilePostQuery videoInfoFilePostQuery = new VideoInfoFilePostQuery();
+        videoInfoFilePostQuery.setVideoId(videoId);
+        videoInfoFilePostQuery.setOrderBy("file_index asc");
+        List<VideoInfoFilePost> videoInfoFilePostList = videoInfoFilePostService.findListByParam(videoInfoFilePostQuery);
+        // 组装成vo返回
+        VideoPostEditInfoVo vo = new VideoPostEditInfoVo();
+        vo.setVideoInfo(videoInfoPost);
+        vo.setVideoInfoFileList(videoInfoFilePostList);
+        return getSuccessResponseVO(vo);
+    }
+
+    /**
+     * @description: 保存视频的交互信息
+     * @param request
+     * @param videoId
+     * @param interaction
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/13 16:23
+     */
+
+    @RequestMapping("/saveVideoInteraction")
+    public ResponseVO saveVideoInteraction(HttpServletRequest request,@NotEmpty String videoId,String interaction){
+        // 获取视频信息
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        videoInfoService.changeInteraction(videoId,tokenUserInfoDto.getUserId(),interaction);
+        return getSuccessResponseVO(null);
+    }
+
+    @RequestMapping("/deleteVideo")
+    public ResponseVO saveVideoInteraction(HttpServletRequest request,@NotEmpty String videoId){
+        // 获取视频信息
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        videoInfoService.deleteVideo(videoId,tokenUserInfoDto.getUserId());
+        return getSuccessResponseVO(null);
     }
 
 }

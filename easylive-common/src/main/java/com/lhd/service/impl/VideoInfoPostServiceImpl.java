@@ -309,7 +309,7 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
         return !videoInfoPost.getVideoName().equals(dbVideoInfoPost.getVideoName())
                 || !videoInfoPost.getVideoCover().equals(dbVideoInfoPost.getVideoCover())
                 || !videoInfoPost.getTags().equals(dbVideoInfoPost.getTags())
-                || !videoInfoPost.getIntroduction().equals(dbVideoInfoPost.getIntroduction());
+                || !videoInfoPost.getIntroduction().equals(dbVideoInfoPost.getIntroduction() == null ? "" : dbVideoInfoPost.getIntroduction());
     }
 
     /**
