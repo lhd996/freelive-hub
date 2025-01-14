@@ -1,6 +1,6 @@
 package com.lhd.web.aspect;
 
-import com.lhd.annotation.GlobalInterceptor;
+import com.lhd.web.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.ResponseCodeEnum;
@@ -12,7 +12,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -40,7 +39,7 @@ public class GlobalOperationAspect {
      * @author liuhd
      * 2025/1/14 15:24
      */
-    @Before("@annotation(com.lhd.annotation.GlobalInterceptor)")
+    @Before("@annotation(com.lhd.web.annotation.GlobalInterceptor)")
     public void interceptor(JoinPoint point){
         // 获取方法
         Method method =((MethodSignature) point.getSignature()).getMethod();
@@ -60,7 +59,7 @@ public class GlobalOperationAspect {
             throw new BusinessException(ResponseCodeEnum.CODE_901);
         }
         // 如果在redis中没有这个token 说明过期了或者说是恶意token
-        TokenUserInfoDto tokenUserInfoDto = (TokenUserInfoDto) redisUtils.get(Constants.TOKEN_WEB + token);
+        TokenUserInfoDto tokenUserInfoDto = (TokenUserInfoDto) redisUtils.get(Constants.REDIS_KEY_TOKEN_WEB + token);
         if (tokenUserInfoDto == null){
             throw new BusinessException(ResponseCodeEnum.CODE_901);
         }

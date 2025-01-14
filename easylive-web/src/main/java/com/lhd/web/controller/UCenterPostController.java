@@ -1,5 +1,5 @@
 package com.lhd.web.controller;
-import com.lhd.annotation.GlobalInterceptor;
+import com.lhd.web.annotation.GlobalInterceptor;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.VideoStatusEnum;

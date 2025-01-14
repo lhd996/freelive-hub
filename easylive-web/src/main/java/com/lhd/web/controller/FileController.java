@@ -1,6 +1,6 @@
 package com.lhd.web.controller;
 
-import com.lhd.annotation.GlobalInterceptor;
+import com.lhd.web.annotation.GlobalInterceptor;
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.constants.Constants;

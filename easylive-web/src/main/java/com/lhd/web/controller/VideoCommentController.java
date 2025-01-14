@@ -1,6 +1,8 @@
 package com.lhd.web.controller;
 
-import com.lhd.annotation.GlobalInterceptor;
+import com.lhd.annotation.RecordUserMessage;
+import com.lhd.entity.enums.MessageTypeEnum;
+import com.lhd.web.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.CommentTopTypeEnum;
@@ -14,8 +16,6 @@ import com.lhd.entity.query.VideoCommentQuery;
 import com.lhd.entity.vo.PaginationResultVO;
 import com.lhd.entity.vo.ResponseVO;
 import com.lhd.entity.vo.VideoCommentResultVO;
-import com.lhd.entity.vo.VideoInfoVO;
-import com.lhd.exception.BusinessException;
 import com.lhd.service.UserActionService;
 import com.lhd.service.VideoCommentService;
 import com.lhd.service.VideoInfoService;
@@ -63,6 +63,7 @@ public class VideoCommentController extends ABaseController{
      */
     @RequestMapping("/postComment")
     @GlobalInterceptor(checkLogin = true)
+    @RecordUserMessage(messageType = MessageTypeEnum.COMMENT)
     public ResponseVO postComment(HttpServletRequest request,
                                   @NotEmpty String videoId,
                                   @NotEmpty @Size(max = 500) String content,

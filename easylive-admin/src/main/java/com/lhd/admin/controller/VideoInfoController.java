@@ -1,6 +1,8 @@
 package com.lhd.admin.controller;
 
+import com.lhd.annotation.RecordUserMessage;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.enums.MessageTypeEnum;
 import com.lhd.entity.enums.VideoStatusEnum;
 import com.lhd.entity.po.VideoInfoFile;
 import com.lhd.entity.po.VideoInfoPost;
@@ -67,6 +69,7 @@ public class VideoInfoController extends ABaseController {
      */
 
     @RequestMapping("/auditVideo")
+    @RecordUserMessage(messageType = MessageTypeEnum.SYS)
     public ResponseVO auditVideo(@NotEmpty String videoId,@NotEmpty Integer status,String reason){
         videoInfoPostService.auditVideo(videoId,status,reason);
         return getSuccessResponseVO(null);

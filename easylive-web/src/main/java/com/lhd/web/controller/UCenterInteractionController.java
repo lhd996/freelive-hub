@@ -1,17 +1,11 @@
 package com.lhd.web.controller;
-import com.lhd.annotation.GlobalInterceptor;
+import com.lhd.web.annotation.GlobalInterceptor;
 import com.lhd.entity.dto.TokenUserInfoDto;
-import com.lhd.entity.enums.ResponseCodeEnum;
-import com.lhd.entity.enums.VideoStatusEnum;
 import com.lhd.entity.po.*;
 import com.lhd.entity.query.*;
 import com.lhd.entity.vo.PaginationResultVO;
 import com.lhd.entity.vo.ResponseVO;
-import com.lhd.entity.vo.VideoPostEditInfoVo;
-import com.lhd.entity.vo.VideoStatusCountInfoVO;
-import com.lhd.exception.BusinessException;
 import com.lhd.service.*;
-import com.lhd.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 /**

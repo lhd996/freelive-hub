@@ -2,18 +2,15 @@ package com.lhd.web.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import com.lhd.annotation.GlobalInterceptor;
+import com.lhd.web.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.po.VideoInfo;
 import com.lhd.entity.query.VideoDanmuQuery;
 import com.lhd.entity.po.VideoDanmu;
 import com.lhd.entity.vo.ResponseVO;
-import com.lhd.exception.BusinessException;
 import com.lhd.service.VideoDanmuService;
 import com.lhd.service.VideoInfoService;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

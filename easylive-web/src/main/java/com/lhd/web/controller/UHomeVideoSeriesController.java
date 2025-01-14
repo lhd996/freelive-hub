@@ -1,21 +1,14 @@
 package com.lhd.web.controller;
 
-import com.lhd.annotation.GlobalInterceptor;
-import com.lhd.entity.constants.Constants;
+import com.lhd.web.annotation.GlobalInterceptor;
 import com.lhd.entity.dto.TokenUserInfoDto;
-import com.lhd.entity.enums.PageSize;
 import com.lhd.entity.enums.ResponseCodeEnum;
-import com.lhd.entity.enums.UserActionTypeEnum;
-import com.lhd.entity.enums.VideoOrderTypeEnum;
 import com.lhd.entity.po.*;
 import com.lhd.entity.query.*;
-import com.lhd.entity.vo.PaginationResultVO;
 import com.lhd.entity.vo.ResponseVO;
-import com.lhd.entity.vo.UserInfoVO;
 import com.lhd.entity.vo.UserVideoSeriesDetailVO;
 import com.lhd.exception.BusinessException;
 import com.lhd.service.*;
-import com.lhd.utils.CopyTools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
