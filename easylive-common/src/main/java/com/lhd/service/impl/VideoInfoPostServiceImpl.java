@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.lhd.component.EsSearchComponent;
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.constants.Constants;
@@ -62,6 +63,8 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
     private AppConfig appConfig;
     @Resource
     private FFmpegUtils fFmpegUtils;
+    @Resource
+    private EsSearchComponent esSearchComponent;
 
     /**
      * 根据条件查询列表
@@ -547,8 +550,8 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
          // 删除redis删除队列
         redisComponent.cleanDelQueue(videoId);
 
-        // TODO 保存信息到es
-
+        // 保存信息到es
+        esSearchComponent.saveDoc(videoInfo);
     }
 }
 

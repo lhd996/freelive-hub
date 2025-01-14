@@ -5,8 +5,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.lhd.component.EsSearchComponent;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.enums.ResponseCodeEnum;
+import com.lhd.entity.enums.SearchOrderTypeEnum;
 import com.lhd.entity.enums.UserActionTypeEnum;
 import com.lhd.entity.po.UserInfo;
 import com.lhd.entity.po.VideoComment;
@@ -41,6 +43,8 @@ public class UserActionServiceImpl implements UserActionService {
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
     @Resource
     private VideoCommentMapper<VideoComment, VideoCommentQuery> videoCommentMapper;
+    @Resource
+    private EsSearchComponent esSearchComponent;
     /**
      * 根据条件查询列表
      */
@@ -212,7 +216,8 @@ public class UserActionServiceImpl implements UserActionService {
                 // 然后更新视频表
                 videoInfoMapper.updateCountInfo(userAction.getVideoId(), userActionTypeEnum.getField(), changeCount);
                 if (userActionTypeEnum == UserActionTypeEnum.VIDEO_COLLECT) {
-                    // TODO 更新es的收藏
+                    // 更新es的收藏
+                    esSearchComponent.updateDocCount(videoInfo.getVideoId(), SearchOrderTypeEnum.VIDEO_COLLECT.getField(), changeCount);
                 }
                 break;
             case VIDEO_COIN:

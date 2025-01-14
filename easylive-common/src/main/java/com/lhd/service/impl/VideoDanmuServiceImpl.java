@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.lhd.component.EsSearchComponent;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.enums.ResponseCodeEnum;
+import com.lhd.entity.enums.SearchOrderTypeEnum;
 import com.lhd.entity.enums.UserActionTypeEnum;
 import com.lhd.entity.po.VideoInfo;
 import com.lhd.entity.query.VideoInfoQuery;
@@ -34,7 +36,8 @@ public class VideoDanmuServiceImpl implements VideoDanmuService {
     private VideoDanmuMapper<VideoDanmu, VideoDanmuQuery> videoDanmuMapper;
     @Resource
     private VideoInfoMapper<VideoInfo, VideoInfoQuery> videoInfoMapper;
-
+    @Resource
+    private EsSearchComponent esSearchComponent;
     /**
      * 根据条件查询列表
      */
@@ -164,7 +167,8 @@ public class VideoDanmuServiceImpl implements VideoDanmuService {
         this.videoDanmuMapper.insert(videoDanmu);
         // 弹幕加1
         this.videoInfoMapper.updateCountInfo(videoDanmu.getVideoId(), UserActionTypeEnum.VIDEO_DANMU.getField(),Constants.ONE);
-        //TODO 更新es
+        // 更新es
+        esSearchComponent.updateDocCount(videoDanmu.getVideoId(), SearchOrderTypeEnum.VIDEO_DANMU.getField(), 1);
 
 	}
 

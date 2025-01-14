@@ -1,6 +1,7 @@
 package com.lhd.entity.query;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -137,6 +138,16 @@ public class UserInfoQuery extends BaseParam {
 	 * 背景主题
 	 */
 	private Integer theme;
+
+	private List<String> userIdList;
+
+	public List<String> getUserIdList() {
+		return userIdList;
+	}
+
+	public void setUserIdList(List<String> userIdList) {
+		this.userIdList = userIdList;
+	}
 
 
 	public void setUserId(String userId){

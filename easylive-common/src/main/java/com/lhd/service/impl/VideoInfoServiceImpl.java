@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
+import com.lhd.component.EsSearchComponent;
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.po.*;
@@ -46,6 +47,8 @@ public class VideoInfoServiceImpl implements VideoInfoService {
     private VideoCommentMapper<VideoComment, VideoCommentQuery> videoCommentMapper;
     @Resource
     private AppConfig appConfig;
+    @Resource
+    private EsSearchComponent esSearchComponent;
 
     /**
      * 根据条件查询列表
@@ -179,9 +182,8 @@ public class VideoInfoServiceImpl implements VideoInfoService {
         // 删除视频
         videoInfoMapper.deleteByVideoId(videoId);
         videoInfoPostMapper.deleteByVideoId(videoId);
-        // TODO 减少用户硬币
-        // TODO 删除es信息
-
+        // 删除es信息
+        esSearchComponent.delDoc(videoId);
         // 异步删除 弹幕 评论 分p 文件
         executorService.execute(() -> {
             // 删除分p

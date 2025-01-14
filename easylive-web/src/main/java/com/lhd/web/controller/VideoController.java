@@ -1,11 +1,10 @@
 package com.lhd.web.controller;
 
+import com.lhd.component.EsSearchComponent;
 import com.lhd.component.RedisComponent;
+import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
-import com.lhd.entity.enums.ResponseCodeEnum;
-import com.lhd.entity.enums.UserActionTypeEnum;
-import com.lhd.entity.enums.VideoRecommendTypeEnum;
-import com.lhd.entity.enums.VideoStatusEnum;
+import com.lhd.entity.enums.*;
 import com.lhd.entity.po.UserAction;
 import com.lhd.entity.po.VideoInfo;
 import com.lhd.entity.po.VideoInfoFile;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: liuhd
@@ -47,6 +47,8 @@ public class VideoController extends ABaseController {
     private UserActionService userActionService;
     @Resource
     private RedisComponent redisComponent;
+    @Resource
+    private EsSearchComponent esSearchComponent;
     /**
      * 加载已推荐视频
      *
@@ -157,4 +159,45 @@ public class VideoController extends ABaseController {
     public ResponseVO reportVideoPlayOnline(@NotEmpty String fileId,@NotEmpty String deviceId){
         return getSuccessResponseVO(redisComponent.reportVideoOnline(fileId,deviceId));
     }
+
+    /**
+     * @description: 根据关键字搜索视频
+     * @param keyword
+     * @param orderType 根据什么排序
+     * @param pageNo
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/13 22:11
+     */
+    @RequestMapping("/search")
+    public ResponseVO search(@NotEmpty String keyword,Integer orderType,Integer pageNo){
+        // 记录搜索热词
+        redisComponent.addKeywordCount(keyword);
+        // 用ES搜索
+        PaginationResultVO<VideoInfo> resultVO = esSearchComponent.search(true, keyword, orderType, pageNo, PageSize.SIZE30.getSize());
+        return getSuccessResponseVO(resultVO);
+    }
+
+
+    @RequestMapping("/getVideoComment")
+    public ResponseVO search(@NotEmpty String keyword,@NotEmpty String videoId){
+
+        List<VideoInfo> videoInfoList = esSearchComponent.search(false, keyword, SearchOrderTypeEnum.VIDEO_PLAY.getType(), 1, PageSize.SIZE10.getSize()).getList();
+        videoInfoList = videoInfoList.stream().filter(i -> !i.getVideoId().equals(videoId)).collect(Collectors.toList());
+        return getSuccessResponseVO(videoInfoList);
+    }
+
+    /**
+     * @description: 获取搜索热词列表
+     * @param
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/14 11:22
+     */
+    @RequestMapping("/getSearchKeywordTop")
+    public ResponseVO getSearchKeywordTop(){
+        List<String> keywordTop = redisComponent.getKeywordTop(Constants.LENGTH_10);
+        return getSuccessResponseVO(keywordTop);
+    }
+
 }

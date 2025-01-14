@@ -368,4 +368,28 @@ public class RedisComponent {
     public void decrementPlayOnlineCount(String key){
         redisUtils.decrement(key);
     }
+
+    /**
+     * @description: 记录热词，搜索一次加1
+     * @param keyword
+     * @return
+     * @author liuhd
+     * 2025/1/14 11:13
+     */
+
+    public void addKeywordCount(String keyword){
+        redisUtils.zaddCount(Constants.REDIS_KEY_VIDEO_SEARCH_COUNT,keyword);
+    }
+
+    /**
+     * @description:
+     * @param top
+     * @return java.util.List<java.lang.String>
+     * @author liuhd
+     * 2025/1/14 11:15
+     */
+
+    public List<String> getKeywordTop(Integer top){
+        return redisUtils.getZSetList(Constants.REDIS_KEY_VIDEO_SEARCH_COUNT,top-1);
+    }
 }
