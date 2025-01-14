@@ -1,5 +1,6 @@
 package com.lhd.web.controller;
 
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.PageSize;
@@ -70,6 +71,7 @@ public class UHomeVideoSeriesController extends ABaseController {
      */
 
     @RequestMapping("/saveVideoSeries")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO saveVideoSeries(HttpServletRequest request,
                                       Integer seriesId,
                                       @NotEmpty @Size(max = 100) String seriesName,
@@ -97,6 +99,7 @@ public class UHomeVideoSeriesController extends ABaseController {
      */
 
     @RequestMapping("/loadAllVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO loadAllVideo(HttpServletRequest request,Integer seriesId){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         VideoInfoQuery videoInfoQuery = new VideoInfoQuery();
@@ -151,6 +154,7 @@ public class UHomeVideoSeriesController extends ABaseController {
      */
 
     @RequestMapping("/saveSeriesVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO saveSeriesDetail(HttpServletRequest request,@NotNull Integer seriesId,@NotEmpty String videoIds){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         this.userVideoSeriesService.saveSeriesVideo(tokenUserInfoDto.getUserId(),seriesId,videoIds);
@@ -169,6 +173,7 @@ public class UHomeVideoSeriesController extends ABaseController {
      */
 
     @RequestMapping("/delSeriesVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO delSeriesVideo(HttpServletRequest request,@NotNull Integer seriesId,@NotEmpty String videoId){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         this.userVideoSeriesService.delSeriesVideo(tokenUserInfoDto.getUserId(),seriesId,videoId);
@@ -184,6 +189,7 @@ public class UHomeVideoSeriesController extends ABaseController {
      */
 
     @RequestMapping("/delVideoSeries")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO delVideoSeries(HttpServletRequest request,@NotNull Integer seriesId){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         this.userVideoSeriesService.delVideoSeries(tokenUserInfoDto.getUserId(),seriesId);
@@ -199,6 +205,7 @@ public class UHomeVideoSeriesController extends ABaseController {
      */
 
     @RequestMapping("/changeVideoSeriesSort")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO changeVideoSeriesSort(HttpServletRequest request,@NotEmpty String seriesIds){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         this.userVideoSeriesService.changeVideoSeriesSort(tokenUserInfoDto.getUserId(),seriesIds);

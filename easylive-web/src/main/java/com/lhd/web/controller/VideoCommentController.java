@@ -1,5 +1,6 @@
 package com.lhd.web.controller;
 
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.CommentTopTypeEnum;
@@ -61,6 +62,7 @@ public class VideoCommentController extends ABaseController{
      * 2025/1/8 14:32
      */
     @RequestMapping("/postComment")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO postComment(HttpServletRequest request,
                                   @NotEmpty String videoId,
                                   @NotEmpty @Size(max = 500) String content,
@@ -177,6 +179,7 @@ public class VideoCommentController extends ABaseController{
      */
 
     @RequestMapping("/topComment")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO topComment(HttpServletRequest request,@NotNull Integer commentId){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         videoCommentService.topComment(commentId,tokenUserInfoDto.getUserId());
@@ -191,6 +194,7 @@ public class VideoCommentController extends ABaseController{
      */
 
     @RequestMapping("/cancelTopComment")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO cancelTopComment(HttpServletRequest request,@NotNull Integer commentId){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         videoCommentService.cancelTopComment(commentId,tokenUserInfoDto.getUserId());
@@ -198,6 +202,7 @@ public class VideoCommentController extends ABaseController{
     }
 
     @RequestMapping("/userDelComment")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO deleteComment(HttpServletRequest request,@NotNull Integer commentId){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         videoCommentService.deleteComment(commentId,tokenUserInfoDto.getUserId());

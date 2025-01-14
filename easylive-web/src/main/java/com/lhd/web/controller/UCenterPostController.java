@@ -1,4 +1,5 @@
 package com.lhd.web.controller;
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.VideoStatusEnum;
@@ -63,6 +64,7 @@ public class UCenterPostController extends ABaseController{
      */
 
     @RequestMapping("/postVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO postVideo(HttpServletRequest request, String videoId,
                                 @NotEmpty String videoCover,
                                 @NotEmpty @Size(max = 100) String videoName,
@@ -100,6 +102,7 @@ public class UCenterPostController extends ABaseController{
      */
 
     @RequestMapping("/loadVideoList")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO loadVideoPost(HttpServletRequest request,Integer status,Integer pageNo,String videoNameFuzzy){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         VideoInfoPostQuery videoInfoPostQuery = new VideoInfoPostQuery();
@@ -130,6 +133,7 @@ public class UCenterPostController extends ABaseController{
     
 
     @RequestMapping("/getVideoCountInfo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO getVideoCountInfo(HttpServletRequest request){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
         VideoInfoPostQuery videoInfoPostQuery = new VideoInfoPostQuery();
@@ -161,6 +165,7 @@ public class UCenterPostController extends ABaseController{
      */
 
     @RequestMapping("/getVideoByVideoId")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO getVideoByVideoId(HttpServletRequest request,@NotEmpty String videoId){
         // 获取视频信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -191,6 +196,7 @@ public class UCenterPostController extends ABaseController{
      */
 
     @RequestMapping("/saveVideoInteraction")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO saveVideoInteraction(HttpServletRequest request,@NotEmpty String videoId,String interaction){
         // 获取视频信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -199,6 +205,7 @@ public class UCenterPostController extends ABaseController{
     }
 
     @RequestMapping("/deleteVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO saveVideoInteraction(HttpServletRequest request,@NotEmpty String videoId){
         // 获取视频信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);

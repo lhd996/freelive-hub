@@ -1,5 +1,6 @@
 package com.lhd.web.controller;
 
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.constants.Constants;
@@ -83,6 +84,7 @@ public class FileController extends ABaseController {
      */
 
     @RequestMapping("/preUploadVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO preUploadVideo(HttpServletRequest request, @NotEmpty String fileName, @NotNull Integer chunks) {
         // 根据token从redis拿出信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -101,6 +103,7 @@ public class FileController extends ABaseController {
      */
 
     @RequestMapping("/uploadVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO uploadVideo(HttpServletRequest request, @NotNull MultipartFile chunkFile, @NotNull Integer chunkIndex, @NotNull String uploadId) throws IOException {
         // 根据token去拿用户信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -133,6 +136,7 @@ public class FileController extends ABaseController {
 
 
     @RequestMapping("/delUploadVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO delUploadVideo(HttpServletRequest request, @NotEmpty String uploadId) throws IOException {
         // 根据token取出uid
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -158,6 +162,7 @@ public class FileController extends ABaseController {
      */
 
     @RequestMapping("/uploadImage")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO uploadImage(@NotNull MultipartFile file,@NotNull Boolean createThumbnail) throws IOException {
         // 创建图片存放目录
         String day = DateUtil.format(new Date(),DateTimePatternEnum.YYYYMMDD.getPattern());

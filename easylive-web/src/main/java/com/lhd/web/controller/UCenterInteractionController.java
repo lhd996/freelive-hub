@@ -1,4 +1,5 @@
 package com.lhd.web.controller;
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.VideoStatusEnum;
@@ -51,6 +52,7 @@ public class UCenterInteractionController extends ABaseController{
      */
 
     @RequestMapping("/loadAllVideo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO saveVideoInteraction(HttpServletRequest request){
         // 获取视频信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -71,6 +73,7 @@ public class UCenterInteractionController extends ABaseController{
      */
 
     @RequestMapping("/loadComment")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO loadComment(HttpServletRequest request,Integer pageNo,String videoId){
         // 获取视频信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -88,6 +91,7 @@ public class UCenterInteractionController extends ABaseController{
 
 
     @RequestMapping("/delComment")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO delComment(HttpServletRequest request,@NotNull Integer commentId){
         // 获取视频信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -106,6 +110,7 @@ public class UCenterInteractionController extends ABaseController{
      */
 
     @RequestMapping("/loadDanmu")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO loadDanmu(HttpServletRequest request,Integer pageNo,String videoId){
         // 获取视频弹幕信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -123,6 +128,7 @@ public class UCenterInteractionController extends ABaseController{
 
 
     @RequestMapping("/delDanmu")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO delDanmu(HttpServletRequest request,@NotNull Integer danmuId){
         // 获取视频信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);

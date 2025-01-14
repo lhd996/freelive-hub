@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.po.VideoInfo;
 import com.lhd.entity.query.VideoDanmuQuery;
@@ -48,6 +49,7 @@ public class VideoDanmuController extends ABaseController{
 	 */
 
 	@RequestMapping("/postDanmu")
+	@GlobalInterceptor(checkLogin = true)
 	public ResponseVO postDanmu(HttpServletRequest request,
 								@NotEmpty String videoId, @NotEmpty String fileId,
 								@NotEmpty @Size(max = 200) String text, @NotNull Integer mode,

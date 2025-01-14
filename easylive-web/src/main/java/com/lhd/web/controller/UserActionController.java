@@ -1,5 +1,6 @@
 package com.lhd.web.controller;
 
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.po.UserAction;
 import com.lhd.entity.vo.ResponseVO;
@@ -34,6 +35,7 @@ public class UserActionController extends ABaseController{
      */
 
     @RequestMapping("/doAction")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO doAction(HttpServletRequest request,@NotEmpty String videoId,
                                @NotNull Integer actionType,
                                @Max(2) @Min(1) Integer actionCount,

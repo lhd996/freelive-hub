@@ -1,5 +1,6 @@
 package com.lhd.web.controller;
 
+import com.lhd.annotation.GlobalInterceptor;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.PageSize;
@@ -82,6 +83,7 @@ public class UHomeController extends ABaseController {
      */
 
     @RequestMapping("/updateUserInfo")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO updateUserInfo(HttpServletRequest request,
                                      @NotEmpty @Size(max = 20) String nickName,
                                      @NotEmpty @Size(max = 100) String avatar,
@@ -115,6 +117,7 @@ public class UHomeController extends ABaseController {
      */
 
     @RequestMapping("/saveTheme")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO saveTheme(HttpServletRequest request,
                                 @Min(1) @Max(10) @NotNull Integer theme){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -134,6 +137,7 @@ public class UHomeController extends ABaseController {
      */
 
     @RequestMapping("/focus")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO focus(HttpServletRequest request,String focusUserId){
         userFocusService.focusUser(getTokenUserInfoDto(request).getUserId(),focusUserId);
         return getSuccessResponseVO(null);
@@ -149,6 +153,7 @@ public class UHomeController extends ABaseController {
      */
 
     @RequestMapping("/cancelFocus")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO cancelFocus(HttpServletRequest request,String focusUserId){
         userFocusService.cancelFocus(getTokenUserInfoDto(request).getUserId(),focusUserId);
         return getSuccessResponseVO(null);
@@ -163,6 +168,7 @@ public class UHomeController extends ABaseController {
      * 2025/1/11 15:33
      */
     @RequestMapping("/loadFocusList")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO loadFocusList(HttpServletRequest request,Integer pageNo){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 
@@ -185,6 +191,7 @@ public class UHomeController extends ABaseController {
      */
 
     @RequestMapping("/loadFansList")
+    @GlobalInterceptor(checkLogin = true)
     public ResponseVO loadFansList(HttpServletRequest request,Integer pageNo){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 
