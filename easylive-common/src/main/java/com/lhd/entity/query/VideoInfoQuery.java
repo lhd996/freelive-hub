@@ -157,6 +157,16 @@ public class VideoInfoQuery extends BaseParam {
 	// 排除的视频id
 	private String[] excludeVideoIdArray;
 
+	private Integer lastPlayHour;
+
+	public Integer getLastPlayHour() {
+		return lastPlayHour;
+	}
+
+	public void setLastPlayHour(Integer lastPlayHour) {
+		this.lastPlayHour = lastPlayHour;
+	}
+
 	public String[] getExcludeVideoIdArray() {
 		return excludeVideoIdArray;
 	}

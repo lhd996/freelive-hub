@@ -6,6 +6,7 @@ import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.SysSettingDto;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.dto.UploadingFileDto;
+import com.lhd.entity.dto.VideoPlayInfoDto;
 import com.lhd.entity.enums.DateTimePatternEnum;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.po.VideoInfoFile;
@@ -192,8 +193,19 @@ public class FileController extends ABaseController {
         VideoInfoFile videoInfoFile = this.videoInfoFileService.getVideoInfoFileByFileId(fileId);
         String filePath = videoInfoFile.getFilePath();
         readFile(response,filePath + "/" + Constants.M3U8_NAME);
-        // TODO 更新视频的阅读信息
+        //  更新视频的播放信息
+        VideoPlayInfoDto videoPlayInfoDto = new VideoPlayInfoDto();
+        videoPlayInfoDto.setVideoId(videoInfoFile.getVideoId());
+        videoPlayInfoDto.setFileIndex(videoInfoFile.getFileIndex());
 
+        // 这个请求是播放器发过来的 没有token
+        // 因此需要去cookie中取数据
+        TokenUserInfoDto tokenUserInfoDto = getTokenInfoFromCookie();
+        if (tokenUserInfoDto != null){
+            videoPlayInfoDto.setUserId(tokenUserInfoDto.getUserId());
+        }
+        // 将视频的播放信息加入消息队列 异步处理
+        redisComponent.addVideoPlay(videoPlayInfoDto);
     }
 
     /**

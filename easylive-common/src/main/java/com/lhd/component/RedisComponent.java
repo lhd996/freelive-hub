@@ -5,6 +5,7 @@ import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.SysSettingDto;
 import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.dto.UploadingFileDto;
+import com.lhd.entity.dto.VideoPlayInfoDto;
 import com.lhd.entity.enums.DateTimePatternEnum;
 import com.lhd.entity.po.CategoryInfo;
 import com.lhd.entity.po.VideoInfoFilePost;
@@ -382,7 +383,7 @@ public class RedisComponent {
     }
 
     /**
-     * @description:
+     * @description: 获取前多少个热词
      * @param top
      * @return java.util.List<java.lang.String>
      * @author liuhd
@@ -392,4 +393,41 @@ public class RedisComponent {
     public List<String> getKeywordTop(Integer top){
         return redisUtils.getZSetList(Constants.REDIS_KEY_VIDEO_SEARCH_COUNT,top-1);
     }
+
+    /**
+     * @description:
+     * @param videoPlayInfoDto
+     * @return
+     * @author liuhd
+     * 2025/1/14 12:11
+     */
+
+    public void addVideoPlay(VideoPlayInfoDto videoPlayInfoDto){
+        redisUtils.lpush(Constants.REDIS_KEY_QUEUE_VIDEO_PLAY,videoPlayInfoDto,null);
+    }
+
+    /**
+     * @description: 从队列中取出数据
+     * @param
+     * @return com.lhd.entity.dto.VideoPlayInfoDto
+     * @author liuhd
+     * 2025/1/14 12:57
+     */
+
+    public VideoPlayInfoDto getVideoPlayFromVideoPlayQueue(){
+        return (VideoPlayInfoDto) redisUtils.rpop(Constants.REDIS_KEY_QUEUE_VIDEO_PLAY);
+    }
+
+    /**
+     * @description: 按天记录视频的播放量
+     * @param videoId
+     * @return
+     * @author liuhd
+     * 2025/1/14 12:57
+     */
+    public void recordVideoPlayCount(String videoId){
+        String date = DateUtil.format(new Date(), DateTimePatternEnum.YYYY_MM_DD.getPattern());
+        redisUtils.incrementex(Constants.REDIS_KEY_VIDEO_PLAY_COUNT + date + ":" + videoId,Constants.REDIS_KEY_EXPIRES_ONE_DAY * 2L);
+    }
+
 }

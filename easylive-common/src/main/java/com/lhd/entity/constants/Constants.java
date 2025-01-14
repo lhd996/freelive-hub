@@ -13,6 +13,7 @@ public class Constants {
     public static final Integer LENGTH_15 = 15;
     public static final Integer LENGTH_30 = 30;
     public static final Long MB_SIZE = 1024 * 1024L;
+    public static final Integer HOUR_24 = 24;
     // 区分不同项目
     public static final String REDIS_KEY_PREFIX = "easylive:";
     // redis验证码前缀
@@ -59,7 +60,10 @@ public class Constants {
 
     //转码的消息队列
     public static final String REDIS_KEY_QUEUE_TRANSFER = REDIS_KEY_PREFIX + "queue:transfer:";
+    // 视频播放
+    public static final String REDIS_KEY_QUEUE_VIDEO_PLAY = REDIS_KEY_PREFIX + "queue:video:play:";
 
+    public static final String REDIS_KEY_VIDEO_PLAY_COUNT = REDIS_KEY_PREFIX + "video:playcount:";
 
     public static final String TEMP_VIDEO_NAME = "/temp.mp4";
 

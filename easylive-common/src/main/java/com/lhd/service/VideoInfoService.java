@@ -91,4 +91,13 @@ public interface VideoInfoService {
 	 */
 
 	void deleteVideo(String videoId,String userId);
+
+	/**
+	 * @description: 给视频增加播放量
+	 * @param videoId
+	 * @return
+	 * @author liuhd
+	 * 2025/1/14 12:47
+	 */
+	void addReadCount(String videoId);
 }

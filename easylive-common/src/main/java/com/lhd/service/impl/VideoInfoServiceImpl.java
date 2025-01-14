@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import com.lhd.component.EsSearchComponent;
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.enums.ResponseCodeEnum;
+import com.lhd.entity.enums.UserActionTypeEnum;
 import com.lhd.entity.po.*;
 import com.lhd.entity.query.*;
 import com.lhd.exception.BusinessException;
@@ -216,5 +217,10 @@ public class VideoInfoServiceImpl implements VideoInfoService {
                 }
             }
         });
+    }
+
+    @Override
+    public void addReadCount(String videoId) {
+        videoInfoMapper.updateCountInfo(videoId, UserActionTypeEnum.VIDEO_PLAY.getField(), 1);
     }
 }

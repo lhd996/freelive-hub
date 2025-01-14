@@ -86,7 +86,7 @@ public class ABaseController {
     }
 
     /**
-     * 将token存入cookie
+     * 将token存入cookie 因为有些请求没法向请求头中加token
      *
      * @param
      * @return
@@ -139,4 +139,42 @@ public class ABaseController {
             }
         }
     }
+    /**
+     * @description: 获取token信息
+     * @param
+     * @return com.lhd.entity.dto.TokenUserInfoDto
+     * @author liuhd
+     * 2025/1/14 12:26
+     */
+
+    public TokenUserInfoDto getTokenInfoFromCookie(){
+        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = getTokenFromCookie(request);
+        if (token == null){
+            return null;
+        }
+        return redisComponent.getTokenInfo(token);
+
+    }
+    /**
+     * @description: 从cookie中拿token
+     * @param request
+     * @return java.lang.String
+     * @author liuhd
+     * 2025/1/14 12:24
+     */
+
+    private String getTokenFromCookie(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equalsIgnoreCase(Constants.TOKEN_WEB)){
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
 }

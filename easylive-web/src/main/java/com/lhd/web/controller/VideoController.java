@@ -200,4 +200,23 @@ public class VideoController extends ABaseController {
         return getSuccessResponseVO(keywordTop);
     }
 
+    /**
+     * @description: 加载播放量高的视频
+     * @param pageNo
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/14 11:45
+     */
+
+    @RequestMapping("/loadHotVideoList")
+    public ResponseVO loadHotVideoList(Integer pageNo){
+        VideoInfoQuery videoInfoQuery = new VideoInfoQuery();
+        videoInfoQuery.setPageNo(pageNo);
+        videoInfoQuery.setOrderBy("play_count asc");
+        videoInfoQuery.setQueryUserInfo(true);
+        // 只要最近24个小时的
+        videoInfoQuery.setLastPlayHour(Constants.HOUR_24);
+        PaginationResultVO<VideoInfo> resultVO = videoInfoService.findListByPage(videoInfoQuery);
+        return getSuccessResponseVO(resultVO);
+    }
 }
