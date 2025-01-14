@@ -16,16 +16,13 @@ import com.lhd.component.EsSearchComponent;
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.constants.Constants;
+import com.lhd.entity.dto.SysSettingDto;
 import com.lhd.entity.dto.UploadingFileDto;
 import com.lhd.entity.enums.*;
-import com.lhd.entity.po.VideoInfo;
-import com.lhd.entity.po.VideoInfoFile;
-import com.lhd.entity.po.VideoInfoFilePost;
+import com.lhd.entity.po.*;
 import com.lhd.entity.query.*;
 import com.lhd.exception.BusinessException;
-import com.lhd.mappers.VideoInfoFileMapper;
-import com.lhd.mappers.VideoInfoFilePostMapper;
-import com.lhd.mappers.VideoInfoMapper;
+import com.lhd.mappers.*;
 import com.lhd.utils.CopyTools;
 import com.lhd.utils.FFmpegUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +31,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.validator.internal.properties.Field;
 import org.springframework.stereotype.Service;
 
-import com.lhd.entity.po.VideoInfoPost;
 import com.lhd.entity.vo.PaginationResultVO;
-import com.lhd.mappers.VideoInfoPostMapper;
 import com.lhd.service.VideoInfoPostService;
 import com.lhd.utils.StringTools;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +60,8 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
     private FFmpegUtils fFmpegUtils;
     @Resource
     private EsSearchComponent esSearchComponent;
+    @Resource
+    private UserInfoMapper<UserInfo,UserInfoQuery> userInfoMapper;
 
     /**
      * 根据条件查询列表
@@ -506,16 +503,16 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
         if (videoStatusEnum == VideoStatusEnum.STATUS4){
             return;
         }
-
+        VideoInfoPost infoPost = videoInfoPostMapper.selectByVideoId(videoId);
         // 判断是否是第一次审核通过
         VideoInfo dbVideoInfo = this.videoInfoMapper.selectByVideoId(videoId);
         if (dbVideoInfo == null){
-            // TODO 给用户添加硬币
-
+            // 给用户添加硬币
+            SysSettingDto sysSettingDto = redisComponent.getSysSettingDto();
+            userInfoMapper.updateCoinCountInfo(infoPost.getUserId(),sysSettingDto.getPostVideoCoinCount());
         }
         // 将发布视频表内容copy到正式视频表
-        VideoInfoPost dbvideoInfoPost = this.videoInfoPostMapper.selectByVideoId(videoId);
-        VideoInfo videoInfo = CopyTools.copy(dbvideoInfoPost, VideoInfo.class);
+        VideoInfo videoInfo = CopyTools.copy(infoPost, VideoInfo.class);
         // 第一次审核是insert 多次审核是update
         this.videoInfoMapper.insertOrUpdate(videoInfo);
 

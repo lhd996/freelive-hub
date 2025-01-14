@@ -69,4 +69,15 @@ public interface VideoPlayHistoryService {
 	 */
 	Integer deleteVideoPlayHistoryByUserIdAndVideoId(String userId,String videoId);
 
+	/**
+	 * @description: 保存历史记录
+	 * @param userId
+	 * @param videoId
+	 * @param fileIndex
+	 * @return
+	 * @author liuhd
+	 * 2025/1/14 21:39
+	 */
+	void saveHistory(String userId,String videoId,Integer fileIndex);
+
 }

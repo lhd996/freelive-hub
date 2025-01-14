@@ -39,6 +39,25 @@ public class VideoPlayHistory implements Serializable {
 	private Date lastUpdateTime;
 
 
+	private String videoName;
+	private String videoCover;
+
+	public String getVideoName() {
+		return videoName;
+	}
+
+	public void setVideoName(String videoName) {
+		this.videoName = videoName;
+	}
+
+	public String getVideoCover() {
+		return videoCover;
+	}
+
+	public void setVideoCover(String videoCover) {
+		this.videoCover = videoCover;
+	}
+
 	public void setUserId(String userId){
 		this.userId = userId;
 	}

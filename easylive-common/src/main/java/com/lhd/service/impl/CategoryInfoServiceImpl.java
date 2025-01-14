@@ -7,7 +7,10 @@ import javax.annotation.Resource;
 
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.constants.Constants;
+import com.lhd.entity.enums.ResponseCodeEnum;
+import com.lhd.entity.query.VideoInfoQuery;
 import com.lhd.exception.BusinessException;
+import com.lhd.service.VideoInfoService;
 import org.springframework.stereotype.Service;
 
 import com.lhd.entity.enums.PageSize;
@@ -30,6 +33,8 @@ public class CategoryInfoServiceImpl implements CategoryInfoService {
     private CategoryInfoMapper<CategoryInfo, CategoryInfoQuery> categoryInfoMapper;
     @Resource
     private RedisComponent redisComponent;
+    @Resource
+    private VideoInfoService videoInfoService;
 
     /**
      * 根据条件查询列表
@@ -229,6 +234,14 @@ public class CategoryInfoServiceImpl implements CategoryInfoService {
 
     @Override
     public void delCategoryById(Integer categoryId) {
+        // 分类下有无视频
+        VideoInfoQuery videoInfoQuery = new VideoInfoQuery();
+        videoInfoQuery.setCategoryIdOrPCategoryId(categoryId);
+        Integer count = videoInfoService.findCountByParam(videoInfoQuery);
+        if (count > 0) {
+            throw new BusinessException("分类下有视频,无法删除");
+        }
+
         // 删除该分类以及子分类下所有视频
         CategoryInfoQuery query = new CategoryInfoQuery();
         query.setCategoryIdOrPCategoryId(categoryId);

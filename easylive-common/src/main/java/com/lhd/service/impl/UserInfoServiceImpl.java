@@ -7,14 +7,20 @@ import javax.annotation.Resource;
 
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.constants.Constants;
+import com.lhd.entity.dto.CountInfoDto;
+import com.lhd.entity.dto.SysSettingDto;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.dto.UserCountInfoDto;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserSexEnum;
 import com.lhd.entity.enums.UserStatuseEnum;
 import com.lhd.entity.po.UserFocus;
+import com.lhd.entity.po.VideoInfo;
 import com.lhd.entity.query.UserFocusQuery;
+import com.lhd.entity.query.VideoInfoQuery;
 import com.lhd.exception.BusinessException;
 import com.lhd.mappers.UserFocusMapper;
+import com.lhd.mappers.VideoInfoMapper;
 import com.lhd.utils.CopyTools;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.stereotype.Service;
@@ -42,6 +48,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private RedisComponent redisComponent;
 	@Resource
 	private UserFocusMapper<UserFocus, UserFocusQuery> userFocusMapper;
+	@Resource
+	private VideoInfoMapper<VideoInfo, VideoInfoQuery> videoInfoMapper;
 	/**
 	 * 根据条件查询列表
 	 */
@@ -225,10 +233,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 		user.setSex(UserSexEnum.SECRECY.getType());
 		user.setStatus(UserStatuseEnum.ENABLE.getStatus());
 		user.setTheme(Constants.ONE);
-
 		//添加硬币
-		user.setCurrentCoinCount(Constants.TEN);
-		user.setTotalCoinCount(Constants.TEN);
+		SysSettingDto sysSettingDto = redisComponent.getSysSettingDto();
+		user.setCurrentCoinCount(sysSettingDto.getRegisterCoinCount());
+		user.setTotalCoinCount(sysSettingDto.getRegisterCoinCount());
 
 		userInfoMapper.insert(user);
 	}
@@ -275,7 +283,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (null == userInfo){
 			throw new BusinessException(ResponseCodeEnum.CODE_404);
 		}
-		// TODO 获赞数 播放数
+		// 查询获赞数 播放数
+		CountInfoDto countInfoDto = videoInfoMapper.selectSumCountInfo(userId);
+
+		// 塞到用户信息中
+		CopyTools.copyProperties(countInfoDto,userInfo);
 
 		// 查询关注数与粉丝数
 		Integer focusCount = userFocusMapper.selectFocusCount(userId);
@@ -323,5 +335,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (updateTokenInfo){
 			redisComponent.updateTokenInfo(tokenUserInfoDto);
 		}
+	}
+
+	@Override
+	public UserCountInfoDto getUserCountInfo(String userId) {
+		UserInfo userInfo = getUserInfoByUserId(userId);
+		Integer fansCount = userFocusMapper.selectFansCount(userId);
+		Integer focusCount = userFocusMapper.selectFocusCount(userId);
+		Integer currentCoinCount = userInfo.getCurrentCoinCount();
+		UserCountInfoDto userCountInfoDto = new UserCountInfoDto();
+		userCountInfoDto.setFansCount(fansCount);
+		userCountInfoDto.setFocusCount(focusCount);
+		userCountInfoDto.setCurrentCoinCount(currentCoinCount);
+		return userCountInfoDto;
 	}
 }

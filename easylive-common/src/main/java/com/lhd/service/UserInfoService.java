@@ -3,6 +3,7 @@ package com.lhd.service;
 import java.util.List;
 
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.dto.UserCountInfoDto;
 import com.lhd.entity.query.UserInfoQuery;
 import com.lhd.entity.po.UserInfo;
 import com.lhd.entity.vo.PaginationResultVO;
@@ -139,4 +140,7 @@ public interface UserInfoService {
 	 */
 
 	void updateUserInfo(UserInfo userInfo,TokenUserInfoDto tokenUserInfoDto);
+
+
+	UserCountInfoDto getUserCountInfo(String userId);
 }

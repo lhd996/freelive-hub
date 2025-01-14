@@ -37,6 +37,16 @@ public class VideoPlayHistoryQuery extends BaseParam {
 
 	private String lastUpdateTimeEnd;
 
+	// 是否联查
+	private Boolean queryVideoDetail;
+
+	public Boolean getQueryVideoDetail() {
+		return queryVideoDetail;
+	}
+
+	public void setQueryVideoDetail(Boolean queryVideoDetail) {
+		this.queryVideoDetail = queryVideoDetail;
+	}
 
 	public void setUserId(String userId){
 		this.userId = userId;

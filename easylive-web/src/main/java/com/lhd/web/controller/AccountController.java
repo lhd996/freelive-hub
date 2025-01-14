@@ -7,6 +7,7 @@ import java.util.Map;
 import com.lhd.component.RedisComponent;
 import com.lhd.entity.constants.Constants;
 import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.dto.UserCountInfoDto;
 import com.lhd.entity.query.UserInfoQuery;
 import com.lhd.entity.po.UserInfo;
 import com.lhd.entity.vo.ResponseVO;
@@ -124,7 +125,6 @@ public class AccountController extends ABaseController {
             TokenUserInfoDto tokenUserInfoDto = userInfoService.login(email, password, ip);
             // 将token存入cookie,有些请求前端做不到将token放在请求头中,我们只能放在cookie中,然后从cookie中拿
             saveTokenToCookie(response, tokenUserInfoDto.getToken());
-            // TODO 设置粉丝数 关注数
             // 将token送给前端,前端要把token放在请求头中
             return getSuccessResponseVO(tokenUserInfoDto);
         } finally {
@@ -172,7 +172,6 @@ public class AccountController extends ABaseController {
             // 再将token放到cookie中 下次自动携带在请求头中
             saveTokenToCookie(response, tokenUserInfoDto.getToken());
         }
-        // TODO 设置粉丝，关注，硬币数
         // 把最新的tokenUserInfoDto传回去
         return getSuccessResponseVO(tokenUserInfoDto);
     }
@@ -190,5 +189,19 @@ public class AccountController extends ABaseController {
         // 清除redis与cookie中的cookie
         cleanCookies(request, response);
         return getSuccessResponseVO(null);
+    }
+
+    /**
+     * @description: 获取用户的硬币 关注 粉丝数
+     * @param request
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/14 22:10
+     */
+    @RequestMapping("/getUserCountInfo")
+    public ResponseVO logout(HttpServletRequest request) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+        UserCountInfoDto userCountInfo = userInfoService.getUserCountInfo(tokenUserInfoDto.getUserId());
+        return getSuccessResponseVO(userCountInfo);
     }
 }

@@ -8,6 +8,7 @@ import com.lhd.entity.enums.SearchOrderTypeEnum;
 import com.lhd.entity.po.VideoInfoFilePost;
 import com.lhd.service.VideoInfoPostService;
 import com.lhd.service.VideoInfoService;
+import com.lhd.service.VideoPlayHistoryService;
 import com.lhd.utils.StringTools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,8 @@ public class ExecuteQueueTask {
     private VideoInfoService videoInfoService;
     @Resource
     private EsSearchComponent esSearchComponent;
+    @Resource
+    private VideoPlayHistoryService videoPlayHistoryService;
 
     /**
      * @description: 消费视频转码队列
@@ -94,7 +97,8 @@ public class ExecuteQueueTask {
                     videoInfoService.addReadCount(videoPlayInfoDto.getVideoId());
                     // 记录用户历史播放记录
                     if (!StringTools.isEmpty(videoPlayInfoDto.getUserId())){
-                        // TODO 记录历史播放
+                        // 记录历史播放
+                        videoPlayHistoryService.saveHistory(videoPlayInfoDto.getUserId(),videoPlayInfoDto.getVideoId(),videoPlayInfoDto.getFileIndex());
                     }
                     // 按天记录视频播放量
                     redisComponent.recordVideoPlayCount(videoPlayInfoDto.getVideoId());

@@ -1,5 +1,6 @@
 package com.lhd.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -126,5 +127,15 @@ public class VideoPlayHistoryServiceImpl implements VideoPlayHistoryService {
 	@Override
 	public Integer deleteVideoPlayHistoryByUserIdAndVideoId(String userId, String videoId) {
 		return this.videoPlayHistoryMapper.deleteByUserIdAndVideoId(userId, videoId);
+	}
+
+	@Override
+	public void saveHistory(String userId, String videoId, Integer fileIndex) {
+		VideoPlayHistory videoPlayHistory = new VideoPlayHistory();
+		videoPlayHistory.setUserId(userId);
+		videoPlayHistory.setVideoId(videoId);
+		videoPlayHistory.setFileIndex(fileIndex);
+		videoPlayHistory.setLastUpdateTime(new Date());
+		videoPlayHistoryMapper.insertOrUpdate(videoPlayHistory);
 	}
 }

@@ -159,6 +159,16 @@ public class VideoInfoQuery extends BaseParam {
 
 	private Integer lastPlayHour;
 
+	private Integer categoryIdOrPCategoryId;
+
+	public Integer getCategoryIdOrPCategoryId() {
+		return categoryIdOrPCategoryId;
+	}
+
+	public void setCategoryIdOrPCategoryId(Integer categoryIdOrPCategoryId) {
+		this.categoryIdOrPCategoryId = categoryIdOrPCategoryId;
+	}
+
 	public Integer getLastPlayHour() {
 		return lastPlayHour;
 	}

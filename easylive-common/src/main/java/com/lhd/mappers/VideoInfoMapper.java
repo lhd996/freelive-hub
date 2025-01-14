@@ -1,5 +1,6 @@
 package com.lhd.mappers;
 
+import com.lhd.entity.dto.CountInfoDto;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -36,4 +37,6 @@ public interface VideoInfoMapper<T,P> extends BaseMapper<T,P> {
 
 	 void updateCountInfo(@Param("videoId") String videoId,@Param("field") String field,@Param("changeCount") Integer changeCount);
 
+
+	 CountInfoDto selectSumCountInfo(@Param("userId") String userId);
 }

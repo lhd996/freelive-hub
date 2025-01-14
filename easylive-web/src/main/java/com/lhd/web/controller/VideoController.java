@@ -178,10 +178,16 @@ public class VideoController extends ABaseController {
         return getSuccessResponseVO(resultVO);
     }
 
-
-    @RequestMapping("/getVideoComment")
+    /**
+     * @description:
+     * @param keyword 获取推荐视频
+     * @param videoId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/14 21:59
+     */
+    @RequestMapping("/getVideoRecommend")
     public ResponseVO search(@NotEmpty String keyword,@NotEmpty String videoId){
-
         List<VideoInfo> videoInfoList = esSearchComponent.search(false, keyword, SearchOrderTypeEnum.VIDEO_PLAY.getType(), 1, PageSize.SIZE10.getSize()).getList();
         videoInfoList = videoInfoList.stream().filter(i -> !i.getVideoId().equals(videoId)).collect(Collectors.toList());
         return getSuccessResponseVO(videoInfoList);
