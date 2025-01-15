@@ -1,11 +1,13 @@
 package com.lhd.utils;
 
 
+import com.lhd.entity.enums.DateTimePatternEnum;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class DateUtil {
 
@@ -43,5 +45,28 @@ public class DateUtil {
             e.printStackTrace();
         }
         return new Date();
+    }
+
+
+    public static String getBeforeDayDate(Integer day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -day);
+        return format(calendar.getTime(), DateTimePatternEnum.YYYY_MM_DD.getPattern());
+    }
+
+    public static Date getDayAgo(Integer day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -day);
+        return calendar.getTime();
+    }
+
+    public static List<String> getBeforeDates(Integer beforeDays) {
+        LocalDate endDate = LocalDate.now();
+        List<String> dateList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        for (int i = beforeDays; i > 0; i--) {
+            dateList.add(endDate.minusDays(i).format(formatter));
+        }
+        return dateList;
     }
 }

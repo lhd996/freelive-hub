@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lhd.mappers.StatisticsInfoMapper">
 
@@ -44,16 +44,23 @@
 
 	<!-- 通用查询条件列-->
 	<sql id="query_condition">
-	 <where>
-			<include refid="base_condition_filed" />
-			<if test="query.statisticsDateFuzzy!= null  and query.statisticsDateFuzzy!=''">
-				 and  s.statistics_date like concat('%', #{query.statisticsDateFuzzy}, '%')
-			</if>
-			<if test="query.userIdFuzzy!= null  and query.userIdFuzzy!=''">
-				 and  s.user_id like concat('%', #{query.userIdFuzzy}, '%')
-			</if>
-	 </where>
-	</sql>
+        <where>
+            <include refid="base_condition_filed"/>
+            <if test="query.statisticsDateFuzzy!= null  and query.statisticsDateFuzzy!=''">
+                and s.statistics_date like concat('%', #{query.statisticsDateFuzzy}, '%')
+            </if>
+            <if test="query.userIdFuzzy!= null  and query.userIdFuzzy!=''">
+                and s.user_id like concat('%', #{query.userIdFuzzy}, '%')
+
+            </if>
+            <if test="query.statisticsDateStart!=null">
+                <![CDATA[ and  s.statistics_date>=#{query.statisticsDateStart} ]]>
+            </if>
+            <if test="query.statisticsDateEnd!=null">
+                <![CDATA[ and  s.statistics_date<=#{query.statisticsDateEnd} ]]>
+            </if>
+        </where>
+    </sql>
 
 	<!-- 查询集合-->
 	<select id="selectList" resultMap="base_result_map" >
@@ -135,7 +142,7 @@
 				 #{bean.statisticsCount},
 			</if>
 		 </trim>
-		 on DUPLICATE key update 
+		 on DUPLICATE key update
 		 <trim prefix="" suffix="" suffixOverrides=",">
 			<if test="bean.statisticsDate!=null">
 				 statistics_date = VALUES(statistics_date),
@@ -186,7 +193,7 @@
 				 #{item.statisticsCount}
 			 )
 		 </foreach>
-			on DUPLICATE key update 
+			on DUPLICATE key update
 			statistics_date = VALUES(statistics_date),
 			user_id = VALUES(user_id),
 			data_type = VALUES(data_type),
@@ -196,7 +203,7 @@
 	<!--多条件修改-->
 	<update id="updateByParam" parameterType="com.lhd.entity.query.StatisticsInfoQuery">
 		 UPDATE statistics_info s
- 		 <set> 
+ 		 <set>
 			<if test="bean.statisticsDate != null">
 				 statistics_date = #{bean.statisticsDate},
 			</if>
@@ -222,7 +229,7 @@
 	<!-- 根据StatisticsDateAndUserIdAndDataType修改-->
 	<update id="updateByStatisticsDateAndUserIdAndDataType" parameterType="com.lhd.entity.po.StatisticsInfo">
 		 UPDATE statistics_info
- 		 <set> 
+ 		 <set>
 			<if test="bean.statisticsCount != null">
 				 statistics_count = #{bean.statisticsCount},
 			</if>
@@ -240,4 +247,46 @@
 		select <include refid="base_column_list" /> from statistics_info s where statistics_date=#{statisticsDate} and user_id=#{userId} and data_type=#{dataType}
 	</select>
 
+	<select id="selectStatisticsFan" resultMap="base_result_map">
+        select focus_user_id user_id, count(*) statistics_count
+        from user_focus
+        where <![CDATA[ DATE_FORMAT(focus_time,'%Y-%m-%d')=#{statisticsDate}]]>
+		group by focus_user_id
+    </select>
+
+	<select id="selectStatisticsComment" resultMap="base_result_map">
+		select video_user_id user_id, count(*) statistics_count
+		from video_comment
+		where <![CDATA[ DATE_FORMAT(post_time,'%Y-%m-%d')=#{statisticsDate}]]>
+		group by video_user_id
+	</select>
+
+	<select id="selectStatisticsInfo" resultMap="base_result_map">
+		select video_user_id user_id,
+		       action_type data_type,
+		       sum(action_count) statistics_count
+		from user_action
+		where <![CDATA[ DATE_FORMAT(action_time,'%Y-%m-%d')=#{statisticsDate}]]>
+		and action_type in (
+		    <foreach collection="actionTypeArray" separator="," item="item">
+				#{item}
+			</foreach>
+			)
+		group by video_user_id,action_type
+	</select>
+    <select id="selectTotalCountInfo" resultType="java.util.Map">
+		select
+		    ifnull(sum(play_count),0) playCount,
+		    ifnull(sum(like_count),0) likeCount,
+		    ifnull(sum(danmu_count),0) danmuCount,
+		    ifnull(sum(comment_count),0) commentCount,
+		    ifnull(sum(coin_count),0) coinCount,
+		    ifnull(sum(collect_count),0) collectCount
+		    from video_info
+		<where>
+			<if test="userId!=null">
+				and user_id = #{userId}
+			</if>
+		</where>
+	</select>
 </mapper>

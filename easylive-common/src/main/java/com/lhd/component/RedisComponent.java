@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -429,5 +430,15 @@ public class RedisComponent {
         String date = DateUtil.format(new Date(), DateTimePatternEnum.YYYY_MM_DD.getPattern());
         redisUtils.incrementex(Constants.REDIS_KEY_VIDEO_PLAY_COUNT + date + ":" + videoId,Constants.REDIS_KEY_EXPIRES_ONE_DAY * 2L);
     }
-
+    /**
+     * @description: 获取某一天的视频播放量
+     * @param date
+     * @return java.util.Map<java.lang.String, java.lang.Integer>
+     * @author liuhd
+     * 2025/1/15 10:25
+     */
+    public Map<String,Integer> getVideoPlayCount(String date){
+        Map<String,Integer> videoPlayMap = redisUtils.getBatch(Constants.REDIS_KEY_VIDEO_PLAY_COUNT + date);
+        return videoPlayMap;
+    }
 }

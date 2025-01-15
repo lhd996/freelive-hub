@@ -1,6 +1,7 @@
 package com.lhd.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.lhd.entity.query.StatisticsInfoQuery;
 import com.lhd.entity.po.StatisticsInfo;
@@ -69,4 +70,21 @@ public interface StatisticsInfoService {
 	 */
 	Integer deleteStatisticsInfoByStatisticsDateAndUserIdAndDataType(String statisticsDate,String userId,Integer dataType);
 
+	/**
+	 * @description: 统计所有用户的数据
+	 * @param
+	 * @return
+	 * @author liuhd
+	 * 2025/1/15 10:13
+	 */
+	void statisticsData();
+
+	/**
+	 * @description: 获取用户所有的统计信息(实时)
+	 * @param userId
+	 * @return java.util.Map<java.lang.Integer, java.lang.Integer>
+	 * @author liuhd
+	 * 2025/1/15 21:55
+	 */
+	Map<String,Integer> getStatisticsInfoActualTime(String userId);
 }
