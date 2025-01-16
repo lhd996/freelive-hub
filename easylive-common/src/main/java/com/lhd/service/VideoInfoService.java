@@ -100,4 +100,13 @@ public interface VideoInfoService {
 	 * 2025/1/14 12:47
 	 */
 	void addReadCount(String videoId);
+
+	/**
+	 * @description: 推荐视频
+	 * @param videoId
+	 * @return
+	 * @author liuhd
+	 * 2025/1/16 10:34
+	 */
+	void recommendVideo(String videoId);
 }

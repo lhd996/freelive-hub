@@ -69,7 +69,7 @@ public class UCenterStatisticsController extends ABaseController{
         List<StatisticsInfo> preDayData = statisticsInfoService.findListByParam(statisticsInfoQuery);
         // 根据类型分开
         Map<Integer,Integer> preDayDataMap = preDayData.stream().collect(Collectors.toMap(StatisticsInfo::getDataType,StatisticsInfo::getStatisticsCount));
-        // 查用户实时数据
+        // 查用户实时数据（查实时数据与查最近的统计数据涉及的表不一样，因为用户可能会做删除视频之类的操作）
         Map<String, Integer> totalCountInfo = statisticsInfoService.getStatisticsInfoActualTime(tokenUserInfoDto.getUserId());
 
         Map<String,Object> resultVO = new HashMap<>();

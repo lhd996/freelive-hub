@@ -277,6 +277,10 @@ public class RedisComponent {
         }
         return sysSettingDto;
     }
+
+    public void saveSettingDto(SysSettingDto sysSettingDto){
+        redisUtils.set(Constants.REDIS_KEY_SYS_SETTING,sysSettingDto);
+    }
     /**
      * 删除视频文件信息
      * @param
@@ -441,4 +445,7 @@ public class RedisComponent {
         Map<String,Integer> videoPlayMap = redisUtils.getBatch(Constants.REDIS_KEY_VIDEO_PLAY_COUNT + date);
         return videoPlayMap;
     }
+
+
+
 }

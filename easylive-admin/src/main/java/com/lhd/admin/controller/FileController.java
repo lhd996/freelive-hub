@@ -2,21 +2,29 @@ package com.lhd.admin.controller;
 
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.constants.Constants;
+import com.lhd.entity.dto.TokenUserInfoDto;
+import com.lhd.entity.dto.VideoPlayInfoDto;
 import com.lhd.entity.enums.DateTimePatternEnum;
 import com.lhd.entity.enums.ResponseCodeEnum;
+import com.lhd.entity.po.VideoInfoFile;
+import com.lhd.entity.po.VideoInfoFilePost;
 import com.lhd.entity.vo.ResponseVO;
 import com.lhd.exception.BusinessException;
+import com.lhd.service.VideoInfoFilePostService;
+import com.lhd.service.VideoInfoFileService;
 import com.lhd.utils.DateUtil;
 import com.lhd.utils.FFmpegUtils;
 import com.lhd.utils.StringTools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +46,8 @@ public class FileController extends ABaseController {
     private AppConfig appConfig;
     @Resource
     private FFmpegUtils fFmpegUtils;
+    @Resource
+    private VideoInfoFilePostService videoInfoFilePostService;
     /**
      * 文件上传
      *
@@ -110,5 +120,28 @@ public class FileController extends ABaseController {
         } catch (Exception e) {
             log.error("读取文件异常", e);
         }
+    }
+
+    /**
+     * @description: 播放视频
+     * @param response
+     * @param fileId
+     * @return
+     * @author liuhd
+     * 2025/1/16 11:01
+     */
+
+    @RequestMapping("/videoResource/{fileId}")
+    public void getVideoResource(HttpServletResponse response, @PathVariable @NotEmpty String fileId) {
+        VideoInfoFilePost videoInfoFilePost = videoInfoFilePostService.getVideoInfoFilePostByFileId(fileId);
+        String filePath = videoInfoFilePost.getFilePath();
+        readFile(response, filePath + "/" + Constants.M3U8_NAME);
+    }
+
+    @RequestMapping("/videoResource/{fileId}/{ts}")
+    public void getVideoResourceTs(HttpServletResponse response, @PathVariable @NotEmpty String fileId, @PathVariable @NotNull String ts) {
+        VideoInfoFilePost videoInfoFilePost = videoInfoFilePostService.getVideoInfoFilePostByFileId(fileId);
+        String filePath = videoInfoFilePost.getFilePath() + "";
+        readFile(response, filePath + "/" + ts);
     }
 }

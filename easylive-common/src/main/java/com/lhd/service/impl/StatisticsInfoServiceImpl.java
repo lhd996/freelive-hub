@@ -231,8 +231,19 @@ public class StatisticsInfoServiceImpl implements StatisticsInfoService {
             result.put("fansCount",userFocusMapper.selectFansCount(userId));
         }else {
             // 说明后台来查 查所有的用户数
-            result.put("fansCount",userInfoMapper.selectCount(new UserInfoQuery()));
+            result.put("userCount",userInfoMapper.selectCount(new UserInfoQuery()));
         }
         return result;
+    }
+
+
+    @Override
+    public List<StatisticsInfo> findListTotalInfoByParam(StatisticsInfoQuery query) {
+        return statisticsInfoMapper.selectListTotalInfoByParam(query);
+    }
+
+    @Override
+    public List<StatisticsInfo> findUserCountTotalInfoByParam(StatisticsInfoQuery query) {
+        return statisticsInfoMapper.selectUserCountTotalInfoByParam(query);
     }
 }

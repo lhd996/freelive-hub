@@ -70,4 +70,6 @@ public interface UserInfoMapper<T,P> extends BaseMapper<T,P> {
 	 */
 
 	Integer updateCoinCountInfo(@Param("userId") String userId,@Param("changeCount") Integer changeCount);
+
+
 }

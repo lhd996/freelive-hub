@@ -243,8 +243,8 @@ public class VideoCommentServiceImpl implements VideoCommentService {
 		if (videoInfo == null){
 			throw new BusinessException(ResponseCodeEnum.CODE_600);
 		}
-		// 既不是视频发布者 也不是评论的主人
-		if (!videoInfo.getUserId().equals(userId) && !comment.getUserId().equals(userId)){
+		// 既不是视频发布者 也不是评论的主人 也不是管理员
+		if (!videoInfo.getUserId().equals(userId) && !comment.getUserId().equals(userId) && userId != null){
 			throw new BusinessException(ResponseCodeEnum.CODE_600);
 		}
 		videoCommentMapper.deleteByCommentId(commentId);

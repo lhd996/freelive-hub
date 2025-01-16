@@ -12,6 +12,7 @@ import com.lhd.component.EsSearchComponent;
 import com.lhd.entity.config.AppConfig;
 import com.lhd.entity.enums.ResponseCodeEnum;
 import com.lhd.entity.enums.UserActionTypeEnum;
+import com.lhd.entity.enums.VideoRecommendTypeEnum;
 import com.lhd.entity.po.*;
 import com.lhd.entity.query.*;
 import com.lhd.exception.BusinessException;
@@ -176,8 +177,8 @@ public class VideoInfoServiceImpl implements VideoInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteVideo(String videoId, String userId) {
-        VideoInfo videoInfo = videoInfoMapper.selectByVideoId(videoId);
-        if (videoInfo == null || userId != null && !userId.equals(videoInfo.getUserId())) {
+        VideoInfoPost videoInfoPost = videoInfoPostMapper.selectByVideoId(videoId);
+        if (videoInfoPost == null || userId != null && !userId.equals(videoInfoPost.getUserId())) {
             throw new BusinessException(ResponseCodeEnum.CODE_404);
         }
         // 删除视频
@@ -222,5 +223,26 @@ public class VideoInfoServiceImpl implements VideoInfoService {
     @Override
     public void addReadCount(String videoId) {
         videoInfoMapper.updateCountInfo(videoId, UserActionTypeEnum.VIDEO_PLAY.getField(), 1);
+    }
+
+    @Override
+    public void recommendVideo(String videoId) {
+        VideoInfo videoInfo = videoInfoMapper.selectByVideoId(videoId);
+        // 错误的参数
+        if (videoInfo == null){
+            throw new BusinessException(ResponseCodeEnum.CODE_600);
+        }
+        Integer recommendType = null;
+        // 如果已经推荐
+        if (VideoRecommendTypeEnum.RECOMMEND.getType().equals(videoInfo.getRecommendType())){
+            // 改成不推荐
+            recommendType = VideoRecommendTypeEnum.NO_RECOMMEND.getType();
+        } else {
+            // 反之推荐
+            recommendType = VideoRecommendTypeEnum.RECOMMEND.getType();
+        }
+        VideoInfo updateInfo = new VideoInfo();
+        updateInfo.setRecommendType(recommendType);
+        videoInfoMapper.updateByVideoId(updateInfo,videoId);
     }
 }

@@ -74,6 +74,17 @@ public class VideoDanmuQuery extends BaseParam {
 	// 是否联查视频信息
 	private Boolean queryVideoInfo;
 
+	// 模糊查询
+	private String videoNameFuzzy;
+
+	public String getVideoNameFuzzy() {
+		return videoNameFuzzy;
+	}
+
+	public void setVideoNameFuzzy(String videoNameFuzzy) {
+		this.videoNameFuzzy = videoNameFuzzy;
+	}
+
 	public Boolean getQueryVideoInfo() {
 		return queryVideoInfo;
 	}

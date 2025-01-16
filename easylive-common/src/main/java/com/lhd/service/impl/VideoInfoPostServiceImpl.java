@@ -550,6 +550,7 @@ public class VideoInfoPostServiceImpl implements VideoInfoPostService {
         // 保存信息到es
         esSearchComponent.saveDoc(videoInfo);
     }
+
 }
 
 

@@ -87,4 +87,22 @@ public interface StatisticsInfoService {
 	 * 2025/1/15 21:55
 	 */
 	Map<String,Integer> getStatisticsInfoActualTime(String userId);
+
+	/**
+	 * @description: 获取列表中各个类型的统计数据数量
+	 * @param query
+	 * @return java.util.List<com.lhd.entity.po.StatisticsInfo>
+	 * @author liuhd
+	 * 2025/1/15 23:50
+	 */
+	List<StatisticsInfo> findListTotalInfoByParam(StatisticsInfoQuery query);
+
+	/**
+	 * @description: 获取系统用户总数
+	 * @param query
+	 * @return java.util.List<com.lhd.entity.po.StatisticsInfo>
+	 * @author liuhd
+	 * 2025/1/15 23:49
+	 */
+	List<StatisticsInfo> findUserCountTotalInfoByParam(StatisticsInfoQuery query);
 }

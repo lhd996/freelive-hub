@@ -5,7 +5,9 @@ import com.lhd.entity.dto.TokenUserInfoDto;
 import com.lhd.entity.enums.MessageTypeEnum;
 import com.lhd.entity.enums.VideoStatusEnum;
 import com.lhd.entity.po.VideoInfoFile;
+import com.lhd.entity.po.VideoInfoFilePost;
 import com.lhd.entity.po.VideoInfoPost;
+import com.lhd.entity.query.VideoInfoFilePostQuery;
 import com.lhd.entity.query.VideoInfoFileQuery;
 import com.lhd.entity.query.VideoInfoPostQuery;
 import com.lhd.entity.vo.PaginationResultVO;
@@ -36,8 +38,7 @@ public class VideoInfoController extends ABaseController {
     private VideoInfoFilePostService videoInfoFilePostService;
     @Resource
     private VideoInfoService videoInfoService;
-    @Resource
-    private VideoInfoFileService videoInfoFileService;
+
     /**
      * 加载视频
      * @param 
@@ -74,4 +75,45 @@ public class VideoInfoController extends ABaseController {
         videoInfoPostService.auditVideo(videoId,status,reason);
         return getSuccessResponseVO(null);
     }
+    /**
+     * @description: 推荐视频
+     * @param videoId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/16 10:41
+     */
+    @RequestMapping("/recommendVideo")
+    public ResponseVO recommendVideo(@NotEmpty String videoId){
+        videoInfoService.recommendVideo(videoId);
+        return getSuccessResponseVO(null);
+    }
+    /**
+     * @description: 删除视频
+     * @param videoId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/16 10:42
+     */
+    @RequestMapping("/deleteVideo")
+    public ResponseVO deleteVideo(@NotEmpty String videoId){
+        videoInfoService.deleteVideo(videoId,null);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * @description: 加载分P信息
+     * @param videoId
+     * @return com.lhd.entity.vo.ResponseVO
+     * @author liuhd
+     * 2025/1/16 10:56
+     */
+    @RequestMapping("/loadVideoPList")
+    public ResponseVO loadVideoPList(@NotEmpty String videoId){
+        VideoInfoFilePostQuery postQuery = new VideoInfoFilePostQuery();
+        postQuery.setVideoId(videoId);
+        postQuery.setOrderBy("file_index asc");
+        List<VideoInfoFilePost> videoInfoFilePostList = videoInfoFilePostService.findListByParam(postQuery);
+        return getSuccessResponseVO(videoInfoFilePostList);
+    }
+
 }
