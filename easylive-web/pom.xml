@@ -35,7 +35,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.2.6.RELEASE</version>
                 <configuration>
-                    <mainClass>com.easylive.web.EasyliveWebRunApplication</mainClass>
+                    <mainClass>com.lhd.web.EasyLiveWebRunApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

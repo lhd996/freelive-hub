@@ -130,7 +130,6 @@ public class RedisComponent {
      * @author liuhd
      * 2024/12/5 19:16
      */
-
     public TokenUserInfoDto getTokenInfo(String token) {
         return (TokenUserInfoDto) redisUtils.get(Constants.REDIS_KEY_TOKEN_WEB + token);
     }
@@ -204,13 +203,13 @@ public class RedisComponent {
         return (List<CategoryInfo>) redisUtils.get(Constants.REDIS_KEY_CATEGORY_LIST);
     }
 
-    /** 将预上传的视频文件信息保存到redis中
+    /**
+     * 将预上传的视频文件信息保存到redis中
      * @param chunks 这个文件有多少片
      * @return
      * @author liuhd
      * 2024/12/8 11:46
      */
-
     public String savePreVideoFileInfo(String uid, String fileName, Integer chunks) {
         // 每一个文件上传的目录是不重复的的
         String uploadId = StringTools.getRandomString(Constants.LENGTH_15);
@@ -261,6 +260,20 @@ public class RedisComponent {
         redisUtils.setex(Constants.REDIS_KEY_UPLOADING_FILE + userId + fileDto.getUploadId(), fileDto,Constants.REDIS_KEY_EXPIRES_ONE_DAY);
     }
 
+
+    /**
+     * 删除视频文件信息
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/8 15:05
+     */
+
+    public void delVideoInfo(String userId, String uploadId) {
+        redisUtils.delete(Constants.REDIS_KEY_UPLOADING_FILE + userId + uploadId);
+    }
+
+
     /**
      * 获取系统配置
      * @param
@@ -281,17 +294,7 @@ public class RedisComponent {
     public void saveSettingDto(SysSettingDto sysSettingDto){
         redisUtils.set(Constants.REDIS_KEY_SYS_SETTING,sysSettingDto);
     }
-    /**
-     * 删除视频文件信息
-     * @param
-     * @return
-     * @author liuhd
-     * 2024/12/8 15:05
-     */
 
-    public void delVideoInfo(String userId, String uploadId) {
-        redisUtils.delete(Constants.REDIS_KEY_UPLOADING_FILE + userId + uploadId);
-    }
     /**
      * 将视频的要删除的分p加入删除队列
      * @param videoId 视频id delFilePathList 要删除的分p路径List
@@ -303,12 +306,15 @@ public class RedisComponent {
     public void addFile2DelQueue(String videoId, List<String> delFilePathList) {
         redisUtils.lpushAll(Constants.REDIS_KEY_FILE_DEL + videoId,delFilePathList,Constants.REDIS_KEY_EXPIRES_ONE_DAY);
     }
+
+
+
     /**
-     * 将视频分p加入转码的删除队列（针对所有视频）
-     * @param
-     * @return
+     * @description: 从分p删除队列中获取分p
+     * @param videoId
+     * @return java.util.List<java.lang.String>
      * @author liuhd
-     * 2024/12/8 20:55
+     * 2025/1/16 14:15
      */
 
     public List<String> getFilesFromDelQueue(String videoId){
@@ -322,11 +328,17 @@ public class RedisComponent {
      * @author liuhd
      * 2024/12/9 21:33
      */
-
     public void cleanDelQueue(String videoId) {
         redisUtils.delete(Constants.REDIS_KEY_FILE_DEL + videoId);
     }
 
+    /**
+     * 将视频分p加入转码队列（针对所有视频）
+     * @param
+     * @return
+     * @author liuhd
+     * 2024/12/8 20:55
+     */
     public void addFile2TransferQueue(List<VideoInfoFilePost> addFileList) {
         redisUtils.lpushAll(Constants.REDIS_KEY_QUEUE_TRANSFER,addFileList,0);
     }
@@ -375,6 +387,7 @@ public class RedisComponent {
         redisUtils.decrement(key);
     }
 
+
     /**
      * @description: 记录热词，搜索一次加1
      * @param keyword
@@ -382,7 +395,6 @@ public class RedisComponent {
      * @author liuhd
      * 2025/1/14 11:13
      */
-
     public void addKeywordCount(String keyword){
         redisUtils.zaddCount(Constants.REDIS_KEY_VIDEO_SEARCH_COUNT,keyword);
     }
